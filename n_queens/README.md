@@ -7,7 +7,7 @@ This repository contains two different approaches to solving the classic **N-Que
 The following metrics were recorded using the `time/1` predicate in SWI-Prolog:
 
 | Approach | Logical Inferences | CPU Time | 
-| :--- | :--- | :--- | :--- |
+| :--- | :--- | :--- |
 | **Naive (Generate & Test)** | ~89,400,000 | 4.891s | 
 | **Optimized (Interleaving)** | **~25,800** | **0.005s** | 
 
