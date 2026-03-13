@@ -1,30 +1,38 @@
 # Prolog N-Queens Solver
+*(Source: CSPLib Problem [prob054](https://www.csplib.org/Problems/prob054/))*
 
-This repository contains two different approaches to solving the classic **N-Queens Problem** in Prolog. It demonstrates the massive performance difference between a "Generate and Test" strategy and an optimized "Backtracking with Interleaving" approach.
 
-## Performance Comparison (N=12)
+This repository contains three different approaches to solving the classic **N-Queens Problem** in Prolog. It demonstrates the massive performance difference between a "Generate and Test" strategy, an optimized "Backtracking with Interleaving" approach and a solution using Constraint Logic Programming (CLP).
+
+## Performance Comparison (N=15)
 
 The following metrics were recorded using the `time/1` predicate in SWI-Prolog:
 
-| Approach | Logical Inferences | CPU Time |
-| :--- | :--- | :--- |
-| **Naive (Generate & Test)** | ~89,400,000 | 4.891s |
-| **Optimized (Interleaving)** | **~25,800** | **0.005s** |
+| Approach | Logical Inferences | CPU Time | Status |
+| :--- | :--- | :--- | :--- |
+| **Naive (Generate & Test)** | ~3,000,000,000s | 130s | Abort |
+| **Optimized (Interleaving)** | 190,310 | 0.030s| Success |
+| **CLP (Constraint Logic)** | 81,575 | 0.006s | Success |
 ---
 
 ##  Approaches
 
 ### 1. Naive Approach: Generate and Test
 The `n_queens/2` predicate uses a "blind" search strategy. It first generates a full permutation of the board and only then checks if it is valid.
-* **Complexity:** Generates $N!$ permutations. For $N=12$, that is 479,001,600 possible boards to check.
+* **Complexity:** Generates $N!$ permutations. For $N=15$, there are over 1.3 trillion possibilities.
 
 ### 2. Optimized Approach: Backtracking with Interleaving
 The `n_queens2/2` predicate uses "Interleaving". It checks for safety **immediately** after placing a single queen.
-* **Strategy:** If a queen is attacked, Prolog performs **Backtracking** immediately, pruning the entire search tree branch.
+* **Strategy:** If a queen is attacked, Prolog performs **Backtracking** immediately, pruning the entire search tree branch and saving billions of unnecessary checks.
 
----
+### 3. Advanced Approach: Constraint Logic Programming (CLP)
+The `n_queens_clp/2` using the clpfd library, defines logical constraints (rules) instead of manual checks. The programm tries to find a solution according to the rules. It eliminates the impossible solutions (i.e. two queens on the same diagonal or horizontal) before attempting to place the queens. 
 
-### 3. Description (from Clib: https://www.csplib.org/Problems/prob054/)
+* **Scalability:** While Backtracking is fast for small N, CLP is the only approach that remains efficient for very large boards (e.g., N=100).
+
+
+
+### Description (from Clib: https://www.csplib.org/Problems/prob054/)
 
 Can n queens (of the same colour) be placed on a n×n chessboard so that none of the queens can attack each other?
 
@@ -50,4 +58,4 @@ Some care has to be taken when using the n-queens problem as a benchmark. Here a
 ## How to Run
 1. Start SWI-Prolog: `swipl`
 2. Consult the file: `?- [filename].`
-3. Run the optimized version: `?- n_queens2(12, L).`
+3. Run the CLP version: `?- n_queens_clp(12, L).`
