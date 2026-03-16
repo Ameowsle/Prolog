@@ -12,7 +12,7 @@ The `magic_square/2` predicate follows a strict declarative structure:
 
 1.  **Matrix Setup:** Initializes an $N \times N$ grid of variables.
 2.  **Domain & Uniqueness:** Sets the domain for all cells from $1$ to $N^2$ and ensures no number is repeated using `all_different/1`.
-3.  **Sum Constraints:** * Calculates the magic sum using the formula: $Sum = \frac{N(N^2 + 1)}{2}$.
+3.  **Sum Constraints:**  Calculates the magic sum using the formula: $Sum = \frac{N(N^2 + 1)}{2}$.
     * Enforces this sum for all **Rows**.
     * Transposes the matrix to enforce the same sum for all **Columns**.
     * Uses helper predicates (`diag1_cell`, `diag2_cell`) to calculate and enforce the **Diagonal** sums.
