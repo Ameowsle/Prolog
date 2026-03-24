@@ -16,8 +16,8 @@ Find NxN matrices containing numbers 1 to N² where all rows, columns, and diago
 * **Method:** Domain setting, uniqueness constraints, sum constraints, labeling
 
 ### Sudoku
-Solve 9x9 Sudoku puzzles using backtracking and constraint satisfaction techniques.
+Solve 9x9 Sudoku puzzles using backtracking and constraint satisfaction techniques. 
 
-### Killer Sudoku
+### Killer Sudoku (https://www.csplib.org/Problems/prob057/)
 Extended Sudoku variant with additional sum cage constraints.
 
