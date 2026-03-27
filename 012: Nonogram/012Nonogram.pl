@@ -3,8 +3,10 @@
 :- use_module(library(clpfd)).
 
 %given constraints: for the row and and col the list of constraints is stored in a list. 
-row_constraints([[1,1], [3,3], [3,3], [1,1], [3,4], [3,4], [1,1], [10], [9], [7]]).
-col_constraints([[1], [2,2], [2,2,3], [10], [2,3], [2,3], [2,2,3], [10], [2,2,3], [2]]).
+%row_constraints([[1,1], [3,3], [3,3], [1,1], [3,4], [3,4], [1,1], [10], [9], [7]]).
+%col_constraints([[1], [2,2], [2,2,3], [10], [2,3], [2,3], [2,2,3], [10], [2,2,3], [2]]).
+row_constraints([[1], [3], [5], [3], [1]]).
+col_constraints([[1], [3], [5], [3], [1]]).
 
 nanogram(Solution):-
     row_constraints(RowCounts),
@@ -16,15 +18,16 @@ nanogram(Solution):-
     maplist(flip_length(NumCols), Solution), %flip_length(Länge, Liste) :- length(Liste, Länge).
     
     append(Solution, Vars), % 1D list
-    Vars in 0..1 ,
+    Vars ins 0..1 ,
+    label(Vars), %generates all possible 0/1 combinations
     findsol(RowCounts, ColCounts, Solution),
-    label(Vars).
+    !. %Stops after finding the first solution
+    
 
 findsol(RowCounts, ColCounts,Solution):- 
     apply_constraints(RowCounts, Solution),
     transpose(Solution, Transposed), %transposes the matrix
-    apply_constraints(Transposed, Solution),
-    findsol(RowCounts, ColCounts, Solution).
+    apply_constraints(ColCounts, Transposed).
 
 flip_length(Length, List) :- length(List, Length).
 
