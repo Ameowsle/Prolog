@@ -1,30 +1,37 @@
-% 1 for occupied, 0 for gap
-% build matrix 
+% 1 for filled blocks, 0 for gaps
+% Build matrix representation of the nonogram puzzle
 :- use_module(library(clpfd)).
 
-%given constraints: for the row and and col the list of constraints is stored in a list. 
+% Given constraints: for each row and column, a list of block lengths is stored. 
 %row_constraints([[1,1], [3,3], [3,3], [1,1], [3,4], [3,4], [1,1], [10], [9], [7]]).
 %col_constraints([[1], [2,2], [2,2,3], [10], [2,3], [2,3], [2,2,3], [10], [2,2,3], [2]]).
 row_constraints([[1], [3], [5], [3], [1]]).
 col_constraints([[1], [3], [5], [3], [1]]).
 
-nanogram(Solution):-
+nonogram(Solution):-
     row_constraints(RowCounts),
     col_constraints(ColCounts),
     length(RowCounts, NumRows),
     length(ColCounts, NumCols),
     
-    length(Solution, NumRows), %Solution = [_, _, _, _, _, _, _, ..]
-    maplist(flip_length(NumCols), Solution), %flip_length(Länge, Liste) :- length(Liste, Länge).
+    % Create a 2D solution matrix with empty variables
+    length(Solution, NumRows),
+    maplist(flip_length(NumCols), Solution),
     
-    append(Solution, Vars), % 1D list
-    Vars ins 0..1 ,
-    label(Vars), %generates all possible 0/1 combinations
+    % Flatten to 1D list and set domain to 0 or 1
+    append(Solution, Vars),
+    Vars ins 0..1,
+    
+    % Generate all possible 0/1 combinations
+    label(Vars),
+    
+    % Test if combination satisfies all constraints
     findsol(RowCounts, ColCounts, Solution),
     !. %Stops after finding the first solution
     
 
-findsol(RowCounts, ColCounts,Solution):- 
+findsol(RowCounts, ColCounts, Solution):- 
+    % Check if all rows satisfy their constraints
     apply_constraints(RowCounts, Solution),
     transpose(Solution, Transposed), %transposes the matrix
     apply_constraints(ColCounts, Transposed).
@@ -32,7 +39,9 @@ findsol(RowCounts, ColCounts,Solution):-
 flip_length(Length, List) :- length(List, Length).
 
 
+% Base case: no constraints left
 apply_constraints([], _).
+% Recursive case: check each constraint against corresponding line
 apply_constraints([FirstC|RestC], [FirstL|RestL]):-
     check_line(FirstC, FirstL),
     apply_constraints(RestC, RestL).
@@ -40,26 +49,25 @@ apply_constraints([FirstC|RestC], [FirstL|RestL]):-
 %Basecase: if no constraints left, the line is filled with 0
 check_line([], Line) :- maplist(=(0), Line).
 
-%Block has length B
+% Recursive case: check block of length B followed by remaining blocks
 check_line([B|Bs], Line) :-
-    % 1) Führender Gap (kann leer sein) → alles 0
-    append(Gap, Rest, Line), % cuts Line in pieces Gap + Rest = Line
-    maplist(=(0), Gap), %fills list Gap with 0
+    % Optional leading gap (0 or more cells) filled with 0
+    append(Gap, Rest, Line), % Gap +Rest =Line
+    maplist(=(0), Gap),
 
-    % 2) Block with lenth B --> all 1
+    % Block of exactly B consecutive 1s
     length(Block, B),
-    append(Block, After, Rest), % Block +After =Rest
-    %Gap (all 0) + (Block(all 1) + After(min one 0))= Line
+    append(Block, After, Rest), % Gap (all 0) + Block (all 1) + After (with leading 0)=Line
     maplist(=(1), Block),
 
-    % 3) If last Block (no other constraint)= 0; If not: min. one 0, than recursion (calls with next constraint)
+    % After the block, check remaining blocks with required separation
     check_after(Bs, After). 
 
-% If last block (no other constraint)
+% Base case: if no more blocks, fill remaining cells with 0
 check_after([], After) :-
     maplist(=(0), After).
 
-% Oter constraints: sets 0 and calls checkline with next B
-check_after(B, [0|After]) :- %After= 0 + After (sets a 0 between the blocks)
+% Recursive case: at least one 0 gap required between blocks, then check remaining blocks
+check_after(B, [0|After]) :- % After = 0+ After
     check_line(B, After).
 
