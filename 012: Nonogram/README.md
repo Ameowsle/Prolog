@@ -13,23 +13,30 @@
 
 The following metrics were recorded using the `time/1` predicate in SWI-Prolog:
 
-| Approach | Logical Inferences | CPU Time | Wall Time | Status |
+| Approach | Logical Inferences | CPU Time | Wall Time | Speed vs. CLP |
 | :--- | :--- | :--- | :--- | :--- |
-| **Backtracking with Interleaving** | 281,253 | 0.007s | 0.007s | Success |
-| **CLP (Constraint Logic)** | 1,067,544,421 | 22.879s | 23.032s | Success |
+| **Backtracking Optimized** | 60,061 | 0.002s | 0.002s | **11,772x faster** |
+| **Backtracking with Interleaving** | 281,253 | 0.006s | 0.007s | **3,800x faster** |
+| **CLP (Constraint Logic)** | 1,067,544,421 | 23.097s | 23.302s | Baseline |
 
 ## Approaches
 
-### 1. Backtracking with Interleaving (012NonogramBacktrack.pl)
+### 1. Backtracking Optimized (012NonogramBacktrackOptimized.pl)
+- **Strategy:** Row-by-row solving with early column pruning
+- **Method:** Solves one row at a time, then immediately checks if columns are still feasible
+- **Key Optimization:** `check_partial_line/2` provides early backtracking by detecting impossible column states
+- **Performance:** ~4.7x faster than standard backtracking (60K vs. 281K inferences)
+
+### 2. Backtracking with Interleaving (012NonogramBacktrack.pl)
 - **Strategy:** Constraints are checked incrementally during search
 - **Method:** `check_line/2` generates valid row patterns using `append/3` with immediate constraint checking
 - **Custom Transpose:** Uses `my_transpose/2` without library dependencies
 - **Key Insight:** Interleaving constraints during search dramatically prunes invalid branches
 
-### 2. Constraint Logic Programming (012Nonogram.pl)
+### 3. Constraint Logic Programming (012Nonogram.pl)
 - **Strategy:** Uses `library(clpfd)` to define constraints
 - **Method:** `label/1` generates combinations with constraint propagation
-- **Trade-off:** More setup overhead, but better scalability for very large grids
+- **Trade-off:** More setup overhead, but designed for very large grids
 
 ## How to Run
 
@@ -39,7 +46,7 @@ The following metrics were recorded using the `time/1` predicate in SWI-Prolog:
 
 ## Observations
 
-The Backtracking approach significantly outperforms CLP on this 5×5 puzzle, demonstrating that **interleaving constraints with search is more efficient than global constraint propagation for line-based puzzles**. The custom transpose function works correctly and eliminates library dependencies.
+The optimized backtracking approach dramatically outperforms all other strategies, achieving **11,772x speedup** over CLP through intelligent early pruning. The key insight is that checking partial column feasibility during row-by-row solving eliminates impossible branches before they expand the search space. The standard backtracking is already 3,800x faster than CLP, but adding row-by-row constraints with partial column validation provides an additional **4.7x speedup**, demonstrating that **intelligent pruning is more effective than global constraint propagation for line-based puzzles**.
 
 ### Note on the Cut (`!`)
 
