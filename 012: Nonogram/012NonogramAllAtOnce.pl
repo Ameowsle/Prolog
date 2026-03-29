@@ -1,43 +1,44 @@
 % 1 for filled blocks, 0 for gaps
-% Build matrix representation of the nonogram puzzle
-:- use_module(library(clpfd)).
-
 % Given constraints: for each row and column, a list of block lengths is stored. 
-%row_constraints([[1,1], [3,3], [3,3], [1,1], [3,4], [3,4], [1,1], [10], [9], [7]]).
-%col_constraints([[1], [2,2], [2,2,3], [10], [2,3], [2,3], [2,2,3], [10], [2,2,3], [2]]).
 row_constraints([[1], [3], [5], [3], [1]]).
 col_constraints([[1], [3], [5], [3], [1]]).
+
 
 nonogram(Solution):-
     row_constraints(RowCounts),
     col_constraints(ColCounts),
     length(RowCounts, NumRows),
     length(ColCounts, NumCols),
-    
     % Create a 2D solution matrix with empty variables
     length(Solution, NumRows),
     maplist(flip_length(NumCols), Solution),
-    
-    % Flatten to 1D list and set domain to 0 or 1
-    append(Solution, Vars),
-    Vars ins 0..1,
-    
-    % Generate all possible 0/1 combinations
-    label(Vars),
-    
     % Test if combination satisfies all constraints
-    findsol(RowCounts, ColCounts, Solution),
-    !. % Cut: Stops after finding the first solution
+    findsol(RowCounts, ColCounts, Solution).
     
 
 findsol(RowCounts, ColCounts, Solution):- 
     % Check if all rows satisfy their constraints
     apply_constraints(RowCounts, Solution),
-    transpose(Solution, Transposed), %transposes the matrix
+    % Transpose matrix to check columns as rows
+    my_transpose(Solution, Transposed),
+    % Check if all columns (now rows) satisfy their constraints
     apply_constraints(ColCounts, Transposed).
 
 flip_length(Length, List) :- length(List, Length).
 
+% Custom transpose: convert rows to columns without library
+% Base case: empty matrix or all rows empty
+my_transpose([], []).
+my_transpose([[]|_], []).
+
+% Recursive case: extract first element from each row and recurse
+my_transpose(Rows, [Col|Cols]) :-
+    maplist(nth0(0), Rows, Col),
+    maplist(rest_of_list, Rows, RestRows), 
+    my_transpose(RestRows, Cols).
+
+% extract first element of a list
+rest_of_list([_|T], T).
 
 % Base case: no constraints left
 apply_constraints([], _).
@@ -54,12 +55,10 @@ check_line([B|Bs], Line) :-
     % Optional leading gap (0 or more cells) filled with 0
     append(Gap, Rest, Line), % Gap +Rest =Line
     maplist(=(0), Gap),
-
     % Block of exactly B consecutive 1s
     length(Block, B),
     append(Block, After, Rest), % Gap (all 0) + Block (all 1) + After (with leading 0)=Line
     maplist(=(1), Block),
-
     % After the block, check remaining blocks with required separation
     check_after(Bs, After). 
 

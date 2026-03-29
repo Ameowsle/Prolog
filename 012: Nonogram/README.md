@@ -15,25 +15,25 @@ The following metrics were recorded using the `time/1` predicate in SWI-Prolog:
 
 | Approach | Logical Inferences | CPU Time | Wall Time | Speed vs. CLP |
 | :--- | :--- | :--- | :--- | :--- |
-| **Backtracking Optimized** | 60,061 | 0.002s | 0.002s | **11,772x faster** |
-| **Backtracking with Interleaving** | 281,253 | 0.006s | 0.007s | **3,800x faster** |
+| **Row-by-Row with Early Pruning** | 60,061 | 0.002s | 0.002s | **11,772x faster** |
+| **All-at-Once Constraint Check** | 281,253 | 0.006s | 0.007s | **3,800x faster** |
 | **CLP (Constraint Logic)** | 1,067,544,421 | 23.097s | 23.302s | Baseline |
 
 ## Approaches
 
-### 1. Backtracking Optimized (012NonogramBacktrackOptimized.pl)
+### 1. Row-by-Row with Early Pruning (012NonogramRowByRow.pl)
 - **Strategy:** Row-by-row solving with early column pruning
 - **Method:** Solves one row at a time, then immediately checks if columns are still feasible
 - **Key Optimization:** `check_partial_line/2` provides early backtracking by detecting impossible column states
-- **Performance:** ~4.7x faster than standard backtracking (60K vs. 281K inferences)
+- **Performance:** ~4.7x faster than all-at-once approach (60K vs. 281K inferences)
 
-### 2. Backtracking with Interleaving (012NonogramBacktrack.pl)
+### 2. All-at-Once Constraint Check (012NonogramAllAtOnce.pl)
 - **Strategy:** Constraints are checked incrementally during search
 - **Method:** `check_line/2` generates valid row patterns using `append/3` with immediate constraint checking
 - **Custom Transpose:** Uses `my_transpose/2` without library dependencies
 - **Key Insight:** Interleaving constraints during search dramatically prunes invalid branches
 
-### 3. Constraint Logic Programming (012Nonogram.pl)
+### 3. Constraint Logic Programming (012NonogramCLP.pl)
 - **Strategy:** Uses `library(clpfd)` to define constraints
 - **Method:** `label/1` generates combinations with constraint propagation
 - **Trade-off:** More setup overhead, but designed for very large grids
@@ -50,4 +50,4 @@ The optimized backtracking approach dramatically outperforms all other strategie
 
 ### Note on the Cut (`!`)
 
-The CLP version uses a cut (`!`) after `findsol/3` because `label/1` can find multiple solutions through backtracking. The cut stops the search after the first valid solution is found, which is typically what we want for Nonograms (they usually have only one solution). The Backtracking version doesn't need a cut because its constraint logic is deterministic, meaning it doesn't generate multiple solutions to backtrack through.
+The CLP version uses a cut (`!`) after `findsol/3` because `label/1` can find multiple solutions through backtracking. The cut stops the search after the first valid solution is found, which is typically what we want for Nonograms (they usually have only one solution). The All-at-Once and Row-by-Row versions don't need a cut because their constraint logic is deterministic, meaning they don't generate multiple solutions to backtrack through.
