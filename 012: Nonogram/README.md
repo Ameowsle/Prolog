@@ -1,4 +1,3 @@
-```markdown
 # Prolog Nonogram Solver
 *(Source: CSPLib Problem [prob012](https://www.csplib.org/Problems/prob012/))*
 
@@ -41,5 +40,3 @@ The following metrics were recorded using the `time/1` predicate in SWI-Prolog:
 ## Observations
 
 The Backtracking approach significantly outperforms CLP on this 5×5 puzzle, demonstrating that **interleaving constraints with search is more efficient than global constraint propagation for line-based puzzles**. The custom transpose function works correctly and eliminates library dependencies.
-
-```
