@@ -40,3 +40,7 @@ The following metrics were recorded using the `time/1` predicate in SWI-Prolog:
 ## Observations
 
 The Backtracking approach significantly outperforms CLP on this 5×5 puzzle, demonstrating that **interleaving constraints with search is more efficient than global constraint propagation for line-based puzzles**. The custom transpose function works correctly and eliminates library dependencies.
+
+### Note on the Cut (`!`)
+
+The CLP version uses a cut (`!`) after `findsol/3` because `label/1` can find multiple solutions through backtracking. The cut stops the search after the first valid solution is found, which is typically what we want for Nonograms (they usually have only one solution). The Backtracking version doesn't need a cut because its constraint logic is deterministic, meaning it doesn't generate multiple solutions to backtrack through.
