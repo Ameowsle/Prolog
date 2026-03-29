@@ -27,7 +27,7 @@ nonogram(Solution):-
     
     % Test if combination satisfies all constraints
     findsol(RowCounts, ColCounts, Solution),
-    !. %Stops after finding the first solution
+    !. % Cut: Stops after finding the first solution
     
 
 findsol(RowCounts, ColCounts, Solution):- 
