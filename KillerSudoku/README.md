@@ -1,4 +1,3 @@
-```markdown
 # Prolog Killer Sudoku Solver
 *(Source: CSPLib Problem [prob057](https://www.csplib.org/Problems/prob057/))*
 
@@ -20,6 +19,4 @@
 ```prolog
 ?- [filename].
 ?- sudoku(Solution).
-```
-
 ```
