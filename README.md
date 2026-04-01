@@ -1,6 +1,6 @@
 # Constraint Satisfaction Problems (CSP) in Prolog
 
-Collection of various CSP problems from [CSPLib](https://www.csplib.org/) implemented in Prolog with focus on efficient declarative solutions.
+Collection of various CSP problems from [CSPLib](https://www.csplib.org/Problems/) implemented in Prolog with focus on efficient declarative solutions.
 
 ## Problems
 
