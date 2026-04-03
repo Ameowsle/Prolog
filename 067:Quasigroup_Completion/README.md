@@ -1,4 +1,5 @@
 # Problem 067: Quasigroup Completion
+
 *(Source: CSPLib Problem [prob067](https://github.com/csplib/csplib/tree/main/Problems/prob067))*
 
 ## Problem Description
@@ -35,13 +36,19 @@ Could be completed as the full quasigroup shown above.
 
 ## Approaches
 
-### Approach 1: Standard Backtracking with Deterministic Constraint Checking
+### Approach 1: Constraint Logic Programming (CLP(FD))
+
+- **Strategy:** Define domain constraints using `library(clpfd)` with `ins`, `all_distinct`, `transpose`, and `label`
+- **Key Features:** Flatten matrix into variable list (with append/2), enforce row and column distinctness, search with constraint propagation
 
 
 
-## Key Predicates
 
+## How to Run
 
-## File Structure
+1. Start SWI-Prolog: `swipl`
+2. Consult the file: `?- ['068:quasigroupCLP.pl'].`
+3. Run the CLP version: `?- quasigroup(Solution).`
+
 
 
