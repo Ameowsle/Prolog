@@ -16,7 +16,6 @@
 
 ## How to Run
 
-```prolog
-?- [filename].
-?- sudoku(Solution).
-```
+1. Start SWI-Prolog: `swipl`
+2. Consult the file: `?- ['057KillerSudoku.pl'].`
+3. Run the CLP version: `?- sudoku(Solution).`
