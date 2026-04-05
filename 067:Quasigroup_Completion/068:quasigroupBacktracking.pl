@@ -8,20 +8,25 @@ partially_quasigroup([
 
 quasigroup(Solution):-
     partially_quasigroup(Solution), % stores partially pre-filled quasigroup in Solution
-    row_all_diff(Solution),
-    transpose(Solution, Transposed),
-    row_all_diff(Transposed).
+    length(Solution, M),
+    numlist(1, M, Domain),
+    maplist(assign_and_check_row(Domain), Solution),  % Zeile für Zeile prüfen
+    numlist(1, M, Indices),
+    maplist(check_col(Solution), Indices).
 
-row_all_diff([]).
-row_all_diff([First | Rest]):-
-    all_diff(First),
-    row_all_diff(Rest). % all elements in a row must be distinct
+check_col(Solution, Index):-
+    maplist(nth1(Index), Solution, Col),
+    all_diff(Col).
 
+assign_and_check_row(Domain, Row) :-
+    maplist(assign_cell(Domain), Row),  % Zelle für Zelle belegen
+    all_diff(Row).                      % Zeile sofort prüfen
 
-% Rule 1: Rows are empty
-transpose([[]|_], []).
-% Rule 2: Rows have at least one element [H|T]
-transpose([[H|T]|Rows], [FirstCol|Rest]) :-
-    maplist(row_head_tail, [[H|T]|Rows], FirstCol, RestMatrix),
-    transpose(RestMatrix, Rest).
+assign_cell(_, Cell) :- nonvar(Cell).  % bereits fixiert
+assign_cell(Domain, Cell) :- 
+    member(Cell, Domain).              % offen: Wert aus Domain wählen
 
+all_diff(List) :-
+    sort(List, Sorted),
+    length(List, N),
+    length(Sorted, N).
