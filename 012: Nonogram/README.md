@@ -40,9 +40,9 @@ The following metrics were recorded using the `time/1` predicate in SWI-Prolog:
 
 ## How to Run
 
-```prolog
-?- nonogram(Solution), maplist(writeln, Solution).
-```
+1. Start SWI-Prolog: `swipl`
+2. Consult the file: `?- ['012NonogramRowByRow.pl'].`
+3. Run the solver: `?- nonogram(Solution), maplist(writeln, Solution).`
 
 ## Observations
 

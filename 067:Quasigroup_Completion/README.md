@@ -48,6 +48,7 @@ Could be completed as the full quasigroup shown above.
 
 1. Start SWI-Prolog: `swipl`
 2. Consult the file: `?- ['068:quasigroupCLP.pl'].`
+3. Run the solver: `?- quasigroup(Solution).`
 3. Run the CLP version: `?- quasigroup(Solution).`
 
 
