@@ -35,3 +35,9 @@ A magic sequence of length n is a sequence of integers x0…xn−1 between 0 and
 
 ### Complexity:
 While a $3 \times 3$ square (the Lo Shu Square) is trivial, the number of magic squares increases rapidly with $
+
+## How to Run
+
+1. Start SWI-Prolog: `swipl`
+2. Consult the file: `?- ['019.pl'].`
+3. Run the solver: `?- magic_square(N, Square).`
