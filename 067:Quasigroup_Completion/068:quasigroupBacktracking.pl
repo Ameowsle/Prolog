@@ -10,23 +10,28 @@ quasigroup(Solution):-
     partially_quasigroup(Solution), % stores partially pre-filled quasigroup in Solution
     length(Solution, M),
     numlist(1, M, Domain),
-    maplist(assign_and_check_row(Domain), Solution),  % Check line by line 
-    numlist(1, M, Indices),
-    maplist(check_col(Solution), Indices).
+    maplist(assign_and_check_row(Domain, Solution), Solution).  % Check line by line 
 
-check_col(Solution, Index):-
+check_col_partial(Solution, Index):-
     maplist(nth1(Index), Solution, Col),
-    all_diff(Col).
+    all_diff_partial(Col). % Check (incomplete) columns after completing a new row
 
-assign_and_check_row(Domain, Row) :-
+assign_and_check_row(Domain, Solution, Row) :-
     maplist(assign_cell(Domain), Row),  % assign num from domain for every row
-    all_diff(Row). %check row immediately
+    all_diff(Row), % check row immediately
+    maplist(check_col_partial(Solution), Domain). % check partial columns after each row
 
-assign_cell(_, Cell) :- nonvar(Cell).  
+assign_cell(_, Cell) :- nonvar(Cell). % cell pre-filled
 assign_cell(Domain, Cell) :- 
     member(Cell, Domain).              
 
 all_diff(List) :-
     sort(List, Sorted),
     length(List, N),
-    length(Sorted, N).
+    length(Sorted, N). %if no duplicates, then the length of sorted list is N
+
+all_diff_partial(List) :-
+    include(nonvar, List, OnlyNums), % only keep filled cells
+    sort(OnlyNums, Sorted),
+    length(OnlyNums, N),
+    length(Sorted, N). %if no duplicates, then the length of sorted list is N
