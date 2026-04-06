@@ -10,20 +10,19 @@ quasigroup(Solution):-
     partially_quasigroup(Solution), % stores partially pre-filled quasigroup in Solution
     length(Solution, M),
     numlist(1, M, Domain),
-    maplist(assign_and_check_row(Domain, Solution), Solution).  % Check line by line 
+    maplist(assign_and_check_row(Domain, Solution), Solution).  % assigns values from Domain to each row and checks constraints
 
 check_col_partial(Solution, Index):-
-    maplist(nth1(Index), Solution, Col),
+    maplist(nth1(Index), Solution, Col), % extract the column for the given index 
     all_diff_partial(Col). % Check (incomplete) columns after completing a new row
 
 assign_and_check_row(Domain, Solution, Row) :-
     maplist(assign_cell(Domain), Row),  % assign num from domain for every row
     all_diff(Row), % check row immediately
-    maplist(check_col_partial(Solution), Domain). % check partial columns after each row
+    maplist(check_col_partial(Solution), Domain). % Check all columns by calling check_col_partial for every index
 
-assign_cell(_, Cell) :- nonvar(Cell). % cell pre-filled
-assign_cell(Domain, Cell) :- 
-    member(Cell, Domain).              
+assign_cell(Domain, Cell) :- nonvar(Cell). % cell pre-filled
+assign_cell(Domain, Cell) :- member(Cell, Domain).              
 
 all_diff(List) :-
     sort(List, Sorted),
