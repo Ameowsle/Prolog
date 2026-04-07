@@ -14,7 +14,7 @@ quasigroup(Solution):-
 
 check_col_partial(Solution, Index):-
     maplist(nth1(Index), Solution, Col), % extract the column for the given index 
-    all_diff_partial(Col). % Check (incomplete) columns after completing a new row
+    all_diff(Col). % Check (incomplete) columns after completing a new row
 
 assign_and_check_row(Domain, Solution, Row) :-
     maplist(assign_cell(Domain), Row),  % assign num from domain for every row
@@ -22,14 +22,9 @@ assign_and_check_row(Domain, Solution, Row) :-
     maplist(check_col_partial(Solution), Domain). % Check all columns by calling check_col_partial for every index
 
 assign_cell(Domain, Cell) :- nonvar(Cell). % cell pre-filled
-assign_cell(Domain, Cell) :- member(Cell, Domain).              
+assign_cell(Domain, Cell) :- member(Cell, Domain).  % cell empty -> assign a member from domain          
 
 all_diff(List) :-
-    sort(List, Sorted),
-    length(List, N),
-    length(Sorted, N). %if no duplicates, then the length of sorted list is N
-
-all_diff_partial(List) :-
     include(nonvar, List, OnlyNums), % only keep filled cells
     sort(OnlyNums, Sorted),
     length(OnlyNums, N),
