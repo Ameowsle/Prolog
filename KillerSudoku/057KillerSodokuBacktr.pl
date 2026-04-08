@@ -87,7 +87,6 @@ check_sum(OnlyNums, Sum, LengthPos, LengthPos):-   % cage complete: LengthNums e
     sum_list(OnlyNums, PartialSum), 
     PartialSum =:= Sum.
 
-
 pos_to_list(Matrix, pos(R,C), AsNum):-
     nth1(R, Matrix, Row),
     nth1(C, Row, AsNum).
@@ -104,7 +103,6 @@ cols_all_diff(Solution):-
 check_with_index(Solution, Index):-
     maplist(nth1(Index), Solution, Col), %takes the element at Index from every Row and stores it in Col
     all_diff(Col).  %checks if the chosen Number fits in the Col 
-
 
 blocks([], [], []).
 blocks([V1,V2,V3|Rest1], [V4,V5,V6|Rest2], [V7,V8,V9|Rest3]) :-

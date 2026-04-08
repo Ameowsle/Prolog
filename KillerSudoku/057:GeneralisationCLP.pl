@@ -72,7 +72,6 @@ pos_to_list(Matrix, pos(R,C), AsNum):-
     nth1(R, Matrix, Row),
     nth1(C, Row, AsNum).
 
-
 rows_all_diff([]).
 rows_all_diff([FirstRow| Rest]):-
     all_distinct(FirstRow),
@@ -81,7 +80,6 @@ rows_all_diff([FirstRow| Rest]):-
 cols_all_diff(Solution):-
     transpose(Solution, Transposed),
     rows_all_diff(Transposed).
-
 
 take(N, List, PartList, Rest):- 
     length(PartList, N), % Partlist has length N
@@ -99,7 +97,6 @@ buildBlocks(Lines, SquareR):-
     append(Blocks, FlatBlock), 
     all_distinct(FlatBlock),
     buildBlocks(RestLines, SquareR).
-
 
 takeSQRLines([], _).
 takeSQRLines(Matrix, SquareR):-

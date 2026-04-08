@@ -72,7 +72,6 @@ pos_to_list(Matrix, pos(R,C), AsNum):-
     nth1(R, Matrix, Row),
     nth1(C, Row, AsNum).
 
-
 rows_all_diff([]).
 rows_all_diff([FirstRow| Rest]):-
     all_distinct(FirstRow),
