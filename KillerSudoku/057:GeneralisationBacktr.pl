@@ -1,4 +1,3 @@
-:- use_module(library(clpfd)).
 
 % THE PUZZLE: Unknown cells are represented as anonymous variables (_).
 puzzle([
@@ -14,11 +13,11 @@ puzzle([
 ]).
 
 cages([
-    cage(3,  [pos(1,1), pos(1,2)]),             
+    cage(3,  [pos(1,1), pos(1,2)]), 
     cage(15, [pos(1,3), pos(1,4), pos(1,5)]),
     cage(22, [pos(1,6), pos(2,6), pos(2,5), pos(3,5)]), 
-    cage(4,  [pos(1,7), pos(2,7)]),             
-    cage(16, [pos(1,8), pos(2,8)]),                        
+    cage(4,  [pos(1,7), pos(2,7)]),      
+    cage(16, [pos(1,8), pos(2,8)]),            
     cage(15, [pos(1,9), pos(2,9), pos(3,9), pos(4,9)]),   
     cage(25, [pos(2,1), pos(3,1), pos(3,2), pos(2,2)]),  
     cage(17, [pos(2,3), pos(2,4)]),             
@@ -44,44 +43,76 @@ cages([
     cage(13, [pos(9,5), pos(9,6), pos(9,7)]),
     cage(17, [pos(9,8), pos(9,9)]) 
 ]).
-sudoku(Solution):-
-    % copy the predefined puzzel into Solution  
-    puzzle(Solution),
-    length(Solution, Length),
-    % flatten the matrix into a single list and restrict every cell (every element in Vars) to 1–9.
-    append(Solution, Vars), % Vars=[_,6,4,8,_,...,_,1]
 
-    Vars ins 1..Length,
-    % Apply row, column, and 3×3 block constraints.
+sudoku(Solution):-
+    puzzle(Solution),  % copy the predefined puzzel into Solution  
+    append(Solution, Vars),
+    fill(Vars, Solution).
+
+fill([], _).
+fill([H|Rest], Solution):-
+    nonvar(H), %checks if H is a Number (Nonvar), returns true if so and goes on (if false the other fill method is called)
+    fill(Rest, Solution).
+
+fill([H|Rest], Solution):-
+    var(H), % checks if H is a _ (var)
+    length(Solution, Length), 
+    numlist(1, Length, Domain), % Domain = [1, 2, 3, ... , Length]
+    member(H, Domain),
+    check_position(Solution),
+    fill(Rest, Solution).
+
+check_position(Solution):-
+    length(Solution, Length),
     rows_all_diff(Solution), % all elements in a row must be distinct
     cols_all_diff(Solution), % all elements in a col must be distinct
     SquareR is round(sqrt(Length)), % round to convert float to int
-    takeSQRLines(Solution, SquareR), % all blocks must be distinct
-    cages(CageList),  %copy the predefinded cages into CageList
-    cages_all_diff_AND_add_up(CageList, Solution),
-    label(Vars).  % CLP searchs concrete values to all remaining Vars.
+    takeSQRLines(Solution, SquareR), % all 3x3 blocks must be distinct
+    cages(Cages),
+    check_cages(Cages, Solution).
 
-cages_all_diff_AND_add_up([],_).
-cages_all_diff_AND_add_up([cage(Sum, Pos)| Rest], Solution):-
+check_cages([],_).
+check_cages([cage(Sum, Pos)| Rest], Solution):-
     maplist(pos_to_list(Solution), Pos, AsList), %Translates Positions in a List: iterates over Positions list
-    all_distinct(AsList),
-    sum(AsList, #=, Sum),
-    cages_all_diff_AND_add_up(Rest, Solution).
+    all_diff(AsList),
+    include(nonvar, AsList, OnlyNums),
+    length(Pos, LengthPos),
+    length(OnlyNums, LengthNums),
+    check_sum(OnlyNums, Sum, LengthNums, LengthPos),
+    check_cages(Rest, Solution).
+
+check_sum(OnlyNums, Sum, LengthNums, LengthPos):-  % cage not complete yet
+    LengthNums < LengthPos,
+    sum_list(OnlyNums, PartialSum),
+    PartialSum < Sum.
+
+check_sum(OnlyNums, Sum, LengthPos, LengthPos):-   % cage complete: LengthNums equal to LengthPos
+    sum_list(OnlyNums, PartialSum), 
+    PartialSum =:= Sum.
 
 pos_to_list(Matrix, pos(R,C), AsNum):-
     nth1(R, Matrix, Row),
     nth1(C, Row, AsNum).
 
-
 rows_all_diff([]).
 rows_all_diff([FirstRow| Rest]):-
-    all_distinct(FirstRow),
+    all_diff(FirstRow), %checks if the chosen Number fits in the Row 
     rows_all_diff(Rest).
 
 cols_all_diff(Solution):-
-    transpose(Solution, Transposed),
-    rows_all_diff(Transposed).
+    numlist(1,9,Indices), %creates list with number 1 to 9
+    maplist(check_with_index(Solution), Indices). %calls function on every index 
 
+check_with_index(Solution, Index):-
+    maplist(nth1(Index), Solution, Col), %takes the element at Index from every Row and stores it in Col
+    all_diff(Col).  %checks if the chosen Number fits in the Col 
+
+all_diff(List) :-
+    include(nonvar, List, OnlyNum),  %only keep the numbers (remove all _)
+    sort(OnlyNum, Sorted), % sort removes duplicates
+    %check if list is the same after the sort
+    length(OnlyNum, N), 
+    length(Sorted, N).
 
 take(N, List, PartList, Rest):- 
     length(PartList, N), % Partlist has length N
@@ -97,13 +128,11 @@ buildBlocks([[]|_], _).
 buildBlocks(Lines, SquareR):-
     maplist(take(SquareR), Lines, Blocks, RestLines), % takes first SquareR-Elements of every list in Lines and stores them in Blocks. 
     append(Blocks, FlatBlock), 
-    all_distinct(FlatBlock),
+    all_diff(FlatBlock),
     buildBlocks(RestLines, SquareR).
-
 
 takeSQRLines([], _).
 takeSQRLines(Matrix, SquareR):-
     take(SquareR, Matrix, Lines, Rest), 
     buildBlocks(Lines, SquareR),
     takeSQRLines(Rest, SquareR).
-
