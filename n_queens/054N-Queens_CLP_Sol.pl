@@ -22,8 +22,8 @@ safe_diagonals(Solution) :-
     maplist(diff_index, Solution, Columns, DescendingDiagonals),
     
     % Rule: all Diagonals must be unique
-    all_different(AscendingDiagonals),
-    all_different(DescendingDiagonals).
+    all_distinct(AscendingDiagonals),
+    all_distinct(DescendingDiagonals).
 
 % Helper functions for the math
 % #= is the CLP version of 'is' or '=' (defines a mathematical rule)

@@ -9,7 +9,7 @@ magic_square(N, Square) :-
     append(Square, Vars),% creates a list from the matrix
     Max is N * N, % calculate highest value
     Vars ins 1..Max,% every cell must be between 1 and Max (n squared)
-    all_different(Vars),% every value must appear exactly once
+    all_distinct(Vars),% every value must appear exactly once
 
     %Compute magic sum 
     Sum is N * (N * N + 1) // 2, 

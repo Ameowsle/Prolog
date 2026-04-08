@@ -20,4 +20,3 @@ quasigroup(Solution):-
     maplist(all_distinct, Transposed), % all elements in a col must be distinct
 
     label(Vars).
-
