@@ -46,7 +46,7 @@ The following metrics were recorded using the `time/1` predicate in SWI-Prolog:
 
 - **Strategy:** Row-by-row assignment with immediate row and column checks after each row
 - **Method:** For each row, `assign_cell/2` picks a value from the full domain for every empty cell. After filling an entire row, `all_diff/1` checks the row, then `check_col_partial/2` checks every column index for duplicates among already-filled cells.
-- **Key Feature:** Column feasibility is only verified once a whole row is complete — backtracking happens at the row level, not the cell level.
+- **Key Feature:** Column feasibility is only verified once a whole row is complete — backtracking happens at the row level, not the cell level. 
 
 ### 2. Backtracking per Cell (`068:Backtracking_per_Cell.pl`)
 
