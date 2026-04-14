@@ -12,8 +12,8 @@ A **Sudoku** is a 9×9 grid puzzle where each row, column, and 3×3 block must c
 
 | Approach | Logical Inferences | CPU Time | Speed vs. Backtracking |
 | :--- | :--- | :--- | :--- |
-| **CLP (Constraint Logic)** | 69,130 | 0.006s | **~116x faster** |
-| **Backtracking with Domain Constraint** | 520,030 | 0.027s | **~15x faster** |
+| **CLP (Constraint Logic)** | 69,130 | 0.006s | ~116x faster |
+| **Backtracking with Domain Constraint** | 520,030 | 0.027s | ~15x faster |
 | **Naive Backtracking** | 8,053,719 | 0.218s | Baseline |
 
 ## Approaches
