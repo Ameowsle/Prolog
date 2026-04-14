@@ -37,10 +37,13 @@ fill_row([Cell|Rest], RowIdx, ColIdx, Solution) :-
 
 % Candidates = [1..9] minus values used in same row, column, and block 
 candidates(RowIdx, ColIdx, Solution, Cands) :-
+    % row domain
     nth1(RowIdx, Solution, Row),
     include(nonvar, Row, RowUsed),
+    % col domain
     maplist(nth1(ColIdx), Solution, Col),
     include(nonvar, Col, ColUsed),
+    % block domain
     block_values(RowIdx, ColIdx, Solution, BlockUsed),
     numlist(1, 9, All),
     subtract(All, RowUsed, After1),
@@ -48,6 +51,7 @@ candidates(RowIdx, ColIdx, Solution, Cands) :-
     subtract(After2, BlockUsed, Cands).
 
 block_values(RowIdx, ColIdx, Solution, Values) :-
+    % calculate where the block starts: Cell (5,7) starts at (4,7) (upper left corner)
     BlockRow is ((RowIdx - 1) // 3) * 3 + 1,
     BlockCol is ((ColIdx - 1) // 3) * 3 + 1,
     R2 is BlockRow + 1, R3 is BlockRow + 2,
