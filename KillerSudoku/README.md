@@ -11,7 +11,13 @@
 4. **Cage sum:** All cells in a cage must sum to the specified total                           
 5. **Cage uniqueness:** No value may repeat within a cage
 
-
+## Performance Comparison (9×9 Grid)                                                           
+   
+| Approach | Logical Inferences | CPU Time | Speed vs. Backtracking |                          
+| :--- | :--- | :--- | :--- |           
+| **Backtracking with Domain Constraint** | 925,388 | 0.049s | **~18x faster** |               
+| **CLP (Constraint Logic)** | 1,056,038 | 0.052s | **~16x faster** |                          
+| **Naive Backtracking** | 16,645,390 | 0.411s | Baseline |
 
 ## Approaches
 
