@@ -1,10 +1,13 @@
 % Problem: Partially pre-filled quasigroup with size m. 
 partially_quasigroup([
-        [1, _, _, 4],
-        [_, _, 2, _],
-        [3, _, _, _],
-        [_, 3, _, _]
-    ]).
+    [1, _, _, 4, _, _, _],
+    [_, 3, _, _, _, 7, _],
+    [_, _, 5, _, _, _, 2],
+    [4, _, _, 7, _, _, _],
+    [_, 6, _, _, 2, _, _],
+    [_, _, 1, _, _, 4, _],
+    [7, _, _, 3, _, _, 6]
+]).
 
 quasigroup(Solution):-
     partially_quasigroup(Solution), % stores partially pre-filled quasigroup in Solution
