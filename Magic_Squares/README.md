@@ -1,43 +1,54 @@
-# Prolog Magic Square Solver
+# Problem 019: Magic Square
 *(Source: CSPLib Problem [prob019](https://www.csplib.org/Problems/prob019/))*
 
-This repository contains a declarative solution to the **Magic Square Problem** using Prolog with **Constraint Logic Programming (CLP)** to efficiently find $N \times N$ matrices where every row, column, and both main diagonals sum up to the same magic constant.
+An order n magic square is an n×n matrix containing the numbers 1 to n², where every row, column, and both main diagonals sum to the same value — the **magic sum**.
 
+> Note: CSPLib prob019 also describes magic sequences, which is a separate problem and is not solved here.
 
----
+## Problem Constraints
 
-## Approach: Constraint Logic Programming (CLP)
+1. Each number from 1 to n² appears exactly once
+2. Every row sums to the magic sum
+3. Every column sums to the magic sum
+4. Both main diagonals sum to the magic sum
 
-The `magic_square/2` predicate follows a strict declarative structure:
+The magic sum is always: $S = \frac{n(n^2 + 1)}{2}$
 
-1.  **Matrix Setup:** Initializes an $N \times N$ grid of variables.
-2.  **Domain & Uniqueness:** Sets the domain for all cells from $1$ to $N^2$ and ensures no number is repeated using `all_different/1`.
-3.  **Sum Constraints:**  Calculates the magic sum using the formula: $Sum = \frac{N(N^2 + 1)}{2}$.
-    * Enforces this sum for all **Rows**.
-    * Transposes the matrix to enforce the same sum for all **Columns**.
-    * Uses helper predicates (`diag1_cell`, `diag2_cell`) to calculate and enforce the **Diagonal** sums.
-4.  **Labeling:** Once the logical rules are defined, `label/1` performs the actual search for numbers that satisfy all conditions.
+For example, a 3×3 magic square has sum $S = \frac{3 \cdot 10}{2} = 15$.
 
----
+## Approaches
 
-## Description (from CSPLib: [prob019](https://www.csplib.org/Problems/prob019/))
+### 1. Backtracking (`019_Backtracking.pl`)
 
+- **Strategy:** Fills cells one by one using `select/3`, which picks an unused value from the remaining domain and thereby guarantees uniqueness automatically.
+- **Partial sum check:** After every cell assignment, each row, column, and diagonal is checked:
+  - If the line is incomplete: partial sum must not yet exceed S
+  - If the line is complete: sum must equal S exactly
+- This prunes invalid branches early without waiting for the full grid to be filled.
 
-An order n magic square is a n by n matrix containing the numbers 1 to n2, with each row, column and main diagonal equal the same sum. As well as finding magic squares, we are interested in the number of a given size that exist. There are several interesting variations. For example, we may insist on certain values in certain squares (like in quasigroup completion) and ask if the magic square can be completed. In a heterosquare, each row, column and diagonal sums to a different value. In an anti-magic square, the row, column and diagonal sums form a sequence of consecutive integers.
+### 2. Constraint Logic Programming (`019.pl`)
 
-A magic sequence of length n is a sequence of integers x0…xn−1 between 0 and n−1, such that for all i in 0 to n−1, the number i occurs exactly xi times in the sequence. For instance, 6,2,1,0,0,0,1,0,0,0 is a magic sequence since 0 occurs 6 times in it, 1 occurs twice, etc.
-
-
-
-### Problem Constraints:
-* Each number from $\{1, \dots, n^2\}$ must appear exactly once.
-* The sum of each row, column, and the two main diagonals must be equal to the magic constant.
-
-### Complexity:
-While a $3 \times 3$ square (the Lo Shu Square) is trivial, the number of magic squares increases rapidly with $
+- **Strategy:** Declares all constraints upfront using `library(clpfd)`, then calls `label/1` to search.
+- `all_distinct/1` enforces uniqueness, `sum/3` enforces the row/column/diagonal sums.
+- Constraint propagation reduces variable domains before any search begins.
 
 ## How to Run
 
-1. Start SWI-Prolog: `swipl`
-2. Consult the file: `?- ['019.pl'].`
-3. Run the solver: `?- magic_square(N, Square).`
+The only parameter you need to provide is **N** (the grid size). The magic sum is computed automatically inside both solvers.
+
+**Backtracking:**
+```prolog
+?- magic_square_bt(3, Square).
+?- time(magic_square_bt(3, Square)).
+```
+
+**CLP:**
+```prolog
+?- magic_square(3, Square).
+?- time(magic_square(3, Square)).
+```
+
+To print the result row by row:
+```prolog
+?- magic_square_bt(3, Square), maplist(writeln, Square).
+```
