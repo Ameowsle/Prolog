@@ -18,7 +18,7 @@ For example, a 3×3 magic square has sum $S = \frac{3 \cdot 10}{2} = 15$.
 
 ## Approaches
 
-### 1. Backtracking (`019_Backtracking.pl`)
+### 1. Backtracking (`019MagicSquareBacktracking.pl`)
 
 - **Strategy:** Fills cells one by one using `select/3`, which picks an unused value from the remaining domain and thereby guarantees uniqueness automatically.
 - **Partial sum check:** After every cell assignment, each row, column, and diagonal is checked:
@@ -26,7 +26,7 @@ For example, a 3×3 magic square has sum $S = \frac{3 \cdot 10}{2} = 15$.
   - If the line is complete: sum must equal S exactly
 - This prunes invalid branches early without waiting for the full grid to be filled.
 
-### 2. Constraint Logic Programming (`019.pl`)
+### 2. Constraint Logic Programming (`019MagicSquareCLP.pl`)
 
 - **Strategy:** Declares all constraints upfront using `library(clpfd)`, then calls `label/1` to search.
 - `all_distinct/1` enforces uniqueness, `sum/3` enforces the row/column/diagonal sums.
@@ -35,6 +35,9 @@ For example, a 3×3 magic square has sum $S = \frac{3 \cdot 10}{2} = 15$.
 ## How to Run
 
 The only parameter you need to provide is **N** (the grid size). The magic sum is computed automatically inside both solvers.
+
+1. Start SWI-Prolog: `swipl`
+2. Consult a file, e.g.: `?- ['019MagicSquareBacktracking.pl'].`
 
 **Backtracking:**
 ```prolog
