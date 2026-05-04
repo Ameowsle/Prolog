@@ -1,12 +1,12 @@
 # Problem 024: Langford's Number Problem
 *(Source: CSPLib Problem [prob024](https://www.csplib.org/Problems/prob024/))*
 
-Place two copies of each number 1..N into a sequence of length 2N such that the two copies of each number K are exactly K positions apart.
+Place two copies of each number 1..N into a sequence of length 2N such that the two copies of each number K have exactly K numbers between them.
 
 Example (N=3): `[3, 1, 2, 1, 3, 2]`
-- The two 1s are at positions 2 and 4 — 1 position apart ✓
-- The two 2s are at positions 3 and 6 — 2 positions apart ✓
-- The two 3s are at positions 1 and 5 — 3 positions apart ✓
+- The two 1s are at positions 2 and 4 — 1 number between them ✓
+- The two 2s are at positions 3 and 6 — 2 numbers between them ✓
+- The two 3s are at positions 1 and 5 — 3 numbers between them ✓
 
 > Note: A solution only exists when N mod 4 = 0 or N mod 4 = 3 (e.g. N = 3, 4, 7, 8, …).
 
@@ -37,6 +37,7 @@ Example (N=3): `[3, 1, 2, 1, 3, 2]`
 ```prolog
 ?- langford(3, S).
 ?- langford(4, S).
+?- solve(S).
 ```
 
 **CLP:**
@@ -44,4 +45,5 @@ Example (N=3): `[3, 1, 2, 1, 3, 2]`
 ?- ['024LangfordCLP.pl'].
 ?- langford(3, S).
 ?- langford(4, S).
+?- solve(S).
 ```
