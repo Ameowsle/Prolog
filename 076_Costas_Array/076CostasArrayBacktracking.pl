@@ -1,3 +1,5 @@
+:- use_module(library(lists)).
+
 costas(N, Xs) :- % entry point: builds a Costas Array of size N
     numlist(1, N, Domain), % Domain = [1,2,...,N], the values to place
     build(Domain, [], [], Xs). % start building with empty placement and no used diffs
@@ -21,5 +23,5 @@ check_diffs(_, [], _, Used, Used). % base case: no prior values left to check
 check_diffs(Can, [H|T], L, Used, NewUsed) :- % check Can against H at level L
     D is Can - H, % compute difference: new value minus value placed L steps ago
     \+ member(L-D, Used), % reject if displacement vector L-D already exists
-    L1 is L + 1, % next earlier value is one level further away
+    L1 is L + 1, % next index in the array
     check_diffs(Can, T, L1, [L-D|Used], NewUsed). % recurse with L-D added to Used
