@@ -43,7 +43,7 @@ Solve 9x9 Sudoku puzzles using backtracking and constraint satisfaction techniqu
 ### [Number Partitioning](https://www.csplib.org/Problems/prob049/)
 Split the numbers 1 to N into two sets of equal size, equal sum, and equal sum of squares.
 - **Approaches:** Backtracking (with overshoot pruning), CLP
-- **Key Insight:** Only one set needs tracking — the fixed grand totals force the other.
+- **Key Insight:** Only one set needs tracking, the fixed grand totals force the other.
 
 ### [N-Queens Problem](https://www.csplib.org/Problems/prob054/)
 Place N queens on an NxN chessboard so that no two queens threaten each other.

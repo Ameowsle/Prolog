@@ -14,7 +14,7 @@ puzzle([[_, 6, 4, 8, _, _, 3, _, 7],
 sudoku(Solution):-
     % copy the predefined puzzel into Solution  
     puzzle(Solution),
-    % flatten the matrix into a single list and restrict every cell (every element in Vars) to 1–9.
+    % flatten the matrix into a single list and restrict every cell (every element in Vars) to 1-9.
     append(Solution, Vars), % Vars=[_,6,4,8,_,...,_,1]
     Vars ins 1..9,
     % Apply row, column, and 3×3 block constraints.

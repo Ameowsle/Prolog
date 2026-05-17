@@ -15,7 +15,7 @@ quasigroup(Solution):-
     partially_quasigroup(Solution),
     
     length(Solution, M),
-    append(Solution, Vars), % flatten the matrix into a single list and restrict every cell (every element in Vars) to 1–m.
+    append(Solution, Vars), % flatten the matrix into a single list and restrict every cell (every element in Vars) to 1-m.
     Vars ins 1..M,
 
     maplist(all_distinct, Solution), % all elements in a row must be distinct

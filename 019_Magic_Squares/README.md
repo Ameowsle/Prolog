@@ -1,9 +1,9 @@
 # Problem 019: Magic Square
 *(Source: CSPLib Problem [prob019](https://www.csplib.org/Problems/prob019/))*
 
-An order n magic square is an n×n matrix containing the numbers 1 to n², where every row, column, and both main diagonals sum to the same value — the **magic sum**.
+An order n magic square is an n×n matrix containing the numbers 1 to n², where every row, column, and both main diagonals sum to the same value, the **magic sum**.
 
-> Note: CSPLib prob019 also describes magic sequences, which is a separate problem — solutions are included below.
+> Note: CSPLib prob019 also describes magic sequences, which is a separate problem, solutions are included below.
 
 ## Problem Constraints
 
@@ -72,19 +72,19 @@ To print the result row by row:
 ?- magic_square_bt(3, Square), maplist(writeln, Square).
 ```
 
-**Magic Sequence — Backtracking:**
+**Magic Sequence, Backtracking:**
 ```prolog
 ?- ['019MagicSequenceBacktracking.pl'].
 ?- magic_sequence(10, Seq).
 ```
 
-**Magic Sequence — CLP (general solver):**
+**Magic Sequence, CLP (general solver):**
 ```prolog
 ?- ['019MagicSequenceCLP.pl'].
 ?- magic_sequence(10, Seq).
 ```
 
-**Magic Sequence — CLP (predefined puzzle with partial values):**
+**Magic Sequence, CLP (predefined puzzle with partial values):**
 ```prolog
 ?- solve(Seq).
 ```

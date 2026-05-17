@@ -5,14 +5,14 @@ Given N, find a permutation **S** of {0, 1, …, N-1} such that the N-1 consecut
 
 Formally: if **V** = (|S₂−S₁|, |S₃−S₂|, …, |Sₙ−Sₙ₋₁|), then both **S** and **V** must be permutations of their respective ranges.
 
-The problem originates from music theory: pitch-classes 0–11 represent the 12 semitones, and a valid series uses every interval from a minor second (1) to a major seventh (11) exactly once.
+The problem originates from music theory: pitch-classes 0-11 represent the 12 semitones, and a valid series uses every interval from a minor second (1) to a major seventh (11) exactly once.
 
 Example (N=8): `[0,7,1,6,2,5,3,4]` → differences `[7,6,5,4,3,2,1]` 
 
 ## Problem Constraints
 
-1. **S** is a permutation of {0, 1, …, N-1} — each pitch-class appears exactly once
-2. The interval vector **V** is a permutation of {1, 2, …, N-1} — each interval appears exactly once
+1. **S** is a permutation of {0, 1, …, N-1}, each pitch-class appears exactly once
+2. The interval vector **V** is a permutation of {1, 2, …, N-1}, each interval appears exactly once
 
 ## Approaches
 

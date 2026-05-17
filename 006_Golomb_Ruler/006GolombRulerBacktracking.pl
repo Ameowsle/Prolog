@@ -11,7 +11,7 @@ golomb(N, Marks) :-
 % Acc: marks placed so far, stored in reverse order
 % Remaining: how many marks still need to be placed
 % Max: upper bound on mark values (N^2)
-% UsedDiffs: all distances already used — no new mark may repeat one
+% UsedDiffs: all distances already used, no new mark may repeat one
 % Marks: the final result, only bound in the base case
 
 %basecase: Remaining=0 (all marks are set)

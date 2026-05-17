@@ -47,7 +47,7 @@ The following metrics were recorded using the `time/1` predicate in SWI-Prolog:
 
 - **Strategy:** Row-by-row assignment with immediate row and column checks after each row
 - **Method:** For each row, `assign_cell/2` picks a value from the full domain for every empty cell. After filling an entire row, `all_diff/1` checks the row, then `check_col_partial/2` checks every column index for duplicates among already-filled cells.
-- **Key Feature:** Column feasibility is only verified once a whole row is complete — backtracking happens at the row level, not the cell level. 
+- **Key Feature:** Column feasibility is only verified once a whole row is complete, backtracking happens at the row level, not the cell level.
 
 ### 2. Backtracking per Cell (`067:Backtracking_per_Cell.pl`)
 
@@ -79,6 +79,6 @@ To try a different approach, replace the filename with `067:Backtracking_per_Cel
 
 Per-line backtracking is by far the slowest approach, requiring over **271 million inferences** on a 7×7 grid. It only detects column conflicts after an entire row is filled, meaning it explores a large number of invalid partial assignments before failing. CLP (~592x faster) already eliminates much of this through propagation, but still carries framework overhead from building and maintaining the constraint network.
 
-Per-cell backtracking (~6,169x faster) dramatically reduces the search space by checking column constraints after every single cell placement rather than after a full row — pruning invalid branches much earlier. Adding a domain constraint (~7,670x faster) pushes this further: column-conflicting values are filtered out before a cell is assigned at all, so they never enter the search tree.
+Per-cell backtracking (~6,169x faster) dramatically reduces the search space by checking column constraints after every single cell placement rather than after a full row, pruning invalid branches much earlier. Adding a domain constraint (~7,670x faster) pushes this further: column-conflicting values are filtered out before a cell is assigned at all, so they never enter the search tree.
 
 The difference between per-cell and per-cell with domain constraint is relatively small on this puzzle because the 15 pre-filled cells already constrain the grid enough that column conflicts are rare. The gap grows on sparser or larger grids where more candidates are available and column filtering eliminates a larger fraction of them upfront.
