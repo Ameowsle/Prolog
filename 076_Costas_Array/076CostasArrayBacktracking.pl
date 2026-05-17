@@ -2,26 +2,29 @@
 
 costas(N, Xs) :- % entry point: builds a Costas Array of size N
     numlist(1, N, Domain), % Domain = [1,2,...,N], the values to place
-    build(Domain, [], [], Xs). % start building with empty placement and no used diffs
+    N1 is N - 1, % there are N-1 difference levels
+    length(Buckets, N1), % one bucket per level
+    maplist(=([]), Buckets), % every level starts with no diffs used
+    build(Domain, [], Buckets, Xs). % start building with empty placement and empty buckets
 
 % Avail: values not yet placed
 % Placed: values placed so far, in reverse order (most recent first)
-% Used: list of Level-Diff pairs already used across all levels
+% Buckets: list of N-1 buckets, bucket L holds diffs already used at level L
 % Xs: final result, only bound in the base case
 
 % base case: all values placed
 build([], Placed, _, Xs) :- % all values placed, construct result
-    reverse(Placed, Xs). % Placed was built in reverse, flip it to get Xs 
-build(Avail, Placed, Used, Xs) :- % recursive case: still values to place
+    reverse(Placed, Xs). % Placed was built in reverse, flip it to get Xs
+build(Avail, Placed, Buckets, Xs) :- % recursive case: still values to place
     select(Can, Avail, Rest), % pick candidate Can from Avail, Rest = Avail without Can
-    check_diffs(Can, Placed, 1, Used, NewUsed), % verify Can and collect new Level-Diff pairs
-    build(Rest, [Can|Placed], NewUsed, Xs). % recurse with Can placed and updated Used
+    check_diffs(Can, Placed, Buckets, NewBuckets), % verify Can and record its new diffs
+    build(Rest, [Can|Placed], NewBuckets, Xs). % recurse with Can placed and updated buckets
 
-% check_diffs(+Can, +Placed, +Level, +Used, -NewUsed)
-% For each previously placed value at increasing levels, check that Can-H is unused at that level.
-check_diffs(_, [], _, Used, Used). % base case: no prior values left to check
-check_diffs(Can, [H|T], L, Used, NewUsed) :- % check Can against H at level L
+% check_diffs(+Can, +Placed, +Buckets, -NewBuckets)
+% Walk Placed and Buckets in lockstep: the H at position L-1 in Placed pairs with bucket L.
+% For each H, check that Can-H is unused at that level, then add it to that bucket.
+check_diffs(_, [], Buckets, Buckets). % base case: no prior values left to check
+check_diffs(Can, [H|T], [Bucket|Bs], [[D|Bucket]|NBs]) :- % check Can against H at this level
     D is Can - H, % compute difference: new value minus value placed L steps ago
-    \+ member(L-D, Used), % reject if displacement vector L-D already exists
-    L1 is L + 1, % next index in the array
-    check_diffs(Can, T, L1, [L-D|Used], NewUsed). % recurse with L-D added to Used
+    \+ memberchk(D, Bucket), % reject if this diff already exists at this level
+    check_diffs(Can, T, Bs, NBs). % recurse on the next level's bucket
