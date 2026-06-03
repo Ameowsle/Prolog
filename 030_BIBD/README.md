@@ -31,15 +31,16 @@ The parameters are not independent: `B·K = V·R` and `L·(V-1) = R·(K-1)`.
 
 ---
 
-## Performance
+## Performance Comparison ((13,13,4,4,1) projective plane)
 
-Inferences to the first solution (SWI-Prolog).
+Measured with `time/1` in SWI-Prolog (first solution). The "Speed vs. CLP" column is the ratio of logical inferences, the most reproducible metric at these sub-second times; the CPU and wall columns show the actual, much smaller time gap.
 
-| Instance         |   CLP | Backtracking |
-|------------------|------:|-------------:|
-| (7,7,3,3,1) Fano |  207K |           8K |
-| (9,12,4,3,1)     |  850K |         157K |
-| (13,13,4,4,1)    | 2.07M |         349K |
+| Approach         | Logical Inferences | CPU Time | Wall Time | Speed vs. CLP |
+| :---             | :---               | :---     | :---      | :---          |
+| **Backtracking** | 348,688            | 0.018s   | 0.026s    | **5.9x**      |
+| **CLP**          | 2,066,191          | 0.064s   | 0.065s    | Baseline      |
+
+The same ordering holds on the smaller instances (e.g. `(7,7,3,3,1)`: 8K vs 207K inferences).
 
 Backtracking is faster for the first solution: it generates each row directly as a combination with exactly `R` ones and rejects it with cheap arithmetic checks, avoiding the per-cell labeling and propagation that the CLP model pays for. The `lex_chain` symmetry break is not the bottleneck; dropping it makes the CLP search slower (3.57M inferences instead of 2.07M on `(13,13,4,4,1)`), because it also prunes symmetric branches on the way to the first solution. Its larger pay-off is when enumerating all designs, where the backtracking solver, which has no symmetry break, would walk every symmetric copy.
 
