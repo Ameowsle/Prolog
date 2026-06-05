@@ -1,53 +1,87 @@
-# Prolog Nonogram Solver
+# Problem 012: Nonogram
 *(Source: CSPLib Problem [prob012](https://www.csplib.org/Problems/prob012/))*
 
-**Nonograms** are logic puzzles where a grid matrix must be constructed with 1 for filled blocks and 0 for empty cells. Constraints for each row and column define the sequence of consecutive filled blocks (e.g., [3,1,2] = block of 3, gap, block of 1, gap, block of 2).
+A Nonogram is a logic puzzle on a grid where each cell is filled (1) or empty
+(0). Each row and column carries a clue: a list of block lengths giving the
+sizes of the consecutive runs of filled cells, in order, separated by at least
+one empty cell (e.g. `[3,1,2]` means a run of 3, a gap, a run of 1, a gap, a
+run of 2). The goal is to fill the grid so that every row and column matches its
+clue.
 
-## Constraints
+The instance used here is a 5x5 plus sign:
+`row_constraints([[1],[3],[5],[3],[1]])`, columns identical.
 
-1. **Row Constraints:** Each row satisfies its sequence of block lengths
-2. **Column Constraints:** Each column satisfies its sequence of block lengths
-3. **Block Uniqueness:** No gaps within blocks, gaps separate blocks
+## Problem Constraints
 
-## Performance Comparison (5×5 Grid)
-
-The following metrics were recorded using the `time/1` predicate in SWI-Prolog:
-
-| Approach | Logical Inferences | CPU Time | Wall Time | Speed vs. CLP |
-| :--- | :--- | :--- | :--- | :--- |
-| **Row-by-Row with Early Pruning** | 60,061 | 0.002s | 0.002s | **11,772x faster** |
-| **All-at-Once Constraint Check** | 281,253 | 0.006s | 0.007s | **3,800x faster** |
-| **CLP (Constraint Logic)** | 1,067,544,421 | 23.097s | 23.302s | Baseline |
+1. Every row matches its clue: the runs of 1s have exactly the given lengths,
+   in order.
+2. Every column matches its clue under the same rule.
+3. Runs are separated by at least one empty cell; there are no gaps inside a run.
 
 ## Approaches
 
-### 1. Row-by-Row with Early Pruning (012NonogramRowByRow.pl)
-- **Strategy:** Row-by-row solving with early column pruning
-- **Method:** Solves one row at a time, then immediately checks if columns are still feasible
-- **Key Optimization:** `check_partial_line/2` provides early backtracking by detecting impossible column states
-- **Performance:** ~4.7x faster than all-at-once approach (60K vs. 281K inferences)
+The instance is supplied as the `row_constraints/1` and `col_constraints/1`
+facts, but each solver takes the clues as arguments
+(`nonogram(RowCounts, ColCounts, Solution)`), so the same relation solves any
+instance.
 
-### 2. All-at-Once Constraint Check (012NonogramAllAtOnce.pl)
-- **Strategy:** Constraints are checked incrementally during search
-- **Method:** `check_line/2` generates valid row patterns using `append/3` with immediate constraint checking
-- **Custom Transpose:** Uses `my_transpose/2` without library dependencies
-- **Key Insight:** Interleaving constraints during search dramatically prunes invalid branches
+### 1. Row-by-Row with Early Pruning (`012NonogramRowByRow.pl`)
 
-### 3. Constraint Logic Programming (012NonogramCLP.pl)
-- **Strategy:** Uses `library(clpfd)` to define constraints
-- **Method:** `label/1` generates combinations with constraint propagation
-- **Trade-off:** More setup overhead, but designed for very large grids
+- Fills one row at a time with `check_line/2`, then transposes the rows done so
+  far and calls `check_partial_line/2` on each partial column. A column whose
+  filled cells already cannot match its clue fails immediately, so the search
+  backtracks before wasting effort on the remaining rows.
+- This early column check is the key optimisation: it prunes impossible grids
+  long before they are complete.
+
+### 2. All-at-Once Constraint Check (`012NonogramAllAtOnce.pl`)
+
+- Plain backtracking: `check_line/2` generates a candidate for every row, then
+  the grid is transposed and each column is checked against its clue.
+- There is no partial-column pruning, so it explores more of the search space
+  than the row-by-row solver. Kept as a simple reference variant.
+
+### 3. Constraint Logic Programming (`012NonogramCLP.pl`)
+
+- Each clue is compiled into a small DFA whose accepted words are exactly the
+  0/1 sequences matching that clue (`line_dfa/4`), and posted as a regular
+  constraint with `automaton/3`, once per row and once per column.
+- Because the automaton constraints propagate before and during `label/1`, the
+  solver prunes invalid grids as it goes instead of generating then testing.
+  This is the idiomatic CLP(FD) model and the same regular/automaton encoding
+  used by the standard MiniZinc, ECLiPSe and SICStus solutions for this problem.
+
+## Performance Comparison (5x5 plus instance)
+
+All three solvers find the same unique solution. Logical inferences are the
+reproducible metric (first solution, `time/1`); CPU times are indicative.
+
+| Approach | Logical Inferences | CPU Time |
+| :--- | :--- | :--- |
+| Row-by-Row with Early Pruning | 6,997  | < 0.001s |
+| All-at-Once                   | 34,973 | < 0.001s |
+| CLP (automaton)               | 27,215 | < 0.001s |
+
+On this small instance all three are effectively instant. The row-by-row solver
+does least work because partial-column pruning rejects dead grids early. The CLP
+model is the one built to scale: its `automaton/3` constraints propagate the
+clues during search, so it stays practical on large grids where the plain
+backtracking search space would explode.
 
 ## How to Run
 
 1. Start SWI-Prolog: `swipl`
-2. Consult the file: `?- ['012NonogramRowByRow.pl'].`
-3. Run the solver: `?- nonogram(Solution), maplist(writeln, Solution).`
+2. Consult a file, e.g.: `?- ['012NonogramRowByRow.pl'].`
+3. Solve the example instance and print the grid:
 
-## Observations
+```prolog
+?- row_constraints(R), col_constraints(C), nonogram(R, C, Solution),
+   maplist(writeln, Solution).
+```
 
-The optimized backtracking approach dramatically outperforms all other strategies, achieving **11,772x speedup** over CLP through intelligent early pruning. The key insight is that checking partial column feasibility during row-by-row solving eliminates impossible branches before they expand the search space. The standard backtracking is already 3,800x faster than CLP, but adding row-by-row constraints with partial column validation provides an additional **4.7x speedup**, demonstrating that **intelligent pruning is more effective than global constraint propagation for line-based puzzles**.
+The same query works for `012NonogramAllAtOnce.pl` and `012NonogramCLP.pl`.
+To solve a different puzzle, pass its clues directly, e.g.:
 
-### Note on the Cut (`!`)
-
-The CLP version uses a cut (`!`) after `findsol/3` because `label/1` can find multiple solutions through backtracking. The cut stops the search after the first valid solution is found, which is typically what we want for Nonograms (they usually have only one solution). The All-at-Once and Row-by-Row versions don't need a cut because their constraint logic is deterministic, meaning they don't generate multiple solutions to backtrack through.
+```prolog
+?- nonogram([[2],[1,1],[2]], [[2],[1,1],[2]], Solution), maplist(writeln, Solution).
+```
