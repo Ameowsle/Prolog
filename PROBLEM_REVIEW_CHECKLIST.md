@@ -109,7 +109,7 @@ nichts geaendert wird. Knapp halten: was, warum, oder warum absichtlich gelassen
 | 054 N-Queens |  |  |
 | 057 Killer Sudoku |  |  |
 | 067 Quasigroup |  |  |
-| 076 Costas |  |  |
+| 076 Costas | nein | Modell korrekt und idiomatisch (CLP: all_distinct je Ebene des Differenzdreiecks via level_diffs/3 vor label/1, kein generate-and-test; BT: inkrementeller per-Ebene-Bucket-Check \+ memberchk vor der Rekursion, frueher Fail). Counts selbst nachgemessen n=3..9 -> 4,12,40,116,200,444,760 = OEIS A008404, CLP==BT. Extern per reference/076/costas_count.mzn (MiniZinc/Gecode, symmetriefrei) n=3..7 -> 4,12,40,116,200 bestaetigt. Nur Hygiene: README an die 006-Vorlage angeglichen (Titel # Problem 076, Problem Constraints, Approaches, Performance frisch nachgemessen, How to Run), Non-ASCII O(n^2)-Superskript entfernt, Mode-Kommentare ergaenzt |
 
 ---
 
@@ -461,7 +461,7 @@ CLP==BT), P = gepusht.
 | Problem | Anf | Qual | N | V | C | R | S | Ref | P | Notiz |
 |---|---|---|---|---|---|---|---|---|---|---|
 | 006 Golomb Ruler        | [x] | [x] | [x] | [x] | [x] | [x] | [x] | [x] | [x] | fertig inkl. Teil C. Externer Count-Abgleich mit MiniZinc/Gecode (reference/006/golomb_count.mzn: Symmetriebrechung raus + solve satisfy): m=4,5,6 = 354/4618/60010, exakt wie CLP==BT. Modellform deckt sich mit allen vier Referenzen (MiniZinc/ECLiPSe/SICStus/B-Prolog): Schranke n=m*m, mark[1]=0, streng steigend, alldifferent ueber Paardifferenzen. Optimum-Anker N=5/6/7 = 11/17/25 (OGR/ECLiPSe-Tabelle). CLP-Doppelloesung (ueberlappende pairwise_diffs([_],[])) gefixt; redundanten golomb/1 entfernt; README ASCII + Zaehl-Benchmark |
-| 007 All-Interval Series | [x] | [x] | [x] | [x] | [x] | [x] | [x] | [x] | [ ] | sauberes Paar, Logik korrekt belassen (kein Symmetriebruch, aufgabentreu). Counts selbst nachgemessen n=8..12 = 40/120/296/648/1328 (OEIS A006323), CLP==BT, extern gegen all_interval4.mzn (gecode, kein Symmetriebruch) bestaetigt. Hygiene: Mode-Kommentare, library(lists)-Import im BT, README ASCII |
+| 007 All-Interval Series | [x] | [x] | [x] | [x] | [x] | [x] | [x] | [x] | [x] | sauberes Paar, Logik korrekt belassen (kein Symmetriebruch, aufgabentreu). Counts selbst nachgemessen n=8..12 = 40/120/296/648/1328 (OEIS A006323), CLP==BT, extern gegen all_interval4.mzn (gecode, kein Symmetriebruch) bestaetigt. Hygiene: Mode-Kommentare, library(lists)-Import im BT, README ASCII |
 | 012 Nonogram            | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [x] | [ ] | BT-Datei heisst `RowByRow`, nicht `Backtracking`; drei Ansaetze im Root; Titel "Prolog Nonogram Solver" angleichen; Ref: automaton2-mzn gleiche Instanz, eindeutig (REFERENCE_COMPARISON.md) |
 | 015 Schur's Lemma       | [x] | [x] | [ ] | [x] | [x] | [x] | [x] | [x] | [ ] | geprueft, README im neuen Format; Ref: Grenzfall S(3)=13 bestaetigt, schur.mzn-Referenz hat x=y-Fehler (REFERENCE_COMPARISON.md); dann committen+pushen |
 | 019 Magic Squares       | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [x] | [ ] | zwei Probleme: Magic Square und Magic Sequence (je CLP+BT). Entscheiden, ob beide bleiben; Ref: Square n=3->8/n=4->7040, Sequence eindeutig (REFERENCE_COMPARISON.md) |
@@ -471,7 +471,7 @@ CLP==BT), P = gepusht.
 | 054 N-Queens            | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [x] | [ ] | Naive jetzt im Root (drei Ansaetze); Titel "Prolog N-Queens Solver" angleichen; Ref: OEIS A000170 + queens3/queens5.mzn-Counts bestaetigt (REFERENCE_COMPARISON.md) |
 | 057 Killer Sudoku       | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [x] | [ ] | sechs Dateien im Root (Basis + Generalisation je CLP/BT, plus zwei Naive). Entscheiden, welche bleiben; Ref: killer_sudoku.mzn gleiche Instanz/eindeutig; Vergleich empfiehlt nur 2 Generalisierungs-Solver, Rest redundant (REFERENCE_COMPARISON.md) |
 | 067 Quasigroup Compl.   | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [x] | [ ] | vier Ansaetze im Root (CLP + drei BT-Varianten); Ref ERLEDIGT: beide QCP-mzn in reference/067/ abgeglichen, CLP/perCell/perCell+DC == 42 auf gleicher Instanz. ABER: CLP-Datei nutzt andere Instanz als die BT-Dateien, README-Perf-Tabelle dadurch instanz-inkonsistent; A3-Antipattern (Instanz verdrahtet), Refactor auf Instanz-als-Argument offen (REFERENCE_COMPARISON.md) |
-| 076 Costas Array        | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [x] | [ ] | sauberes Paar; Titel "## Costas Array (...)" an `# Problem 076:` angleichen; Ref: OEIS A008404 exakt bis n=12, pycsp3-Referenz nicht lauffaehig (REFERENCE_COMPARISON.md) |
+| 076 Costas Array        | [x] | [x] | [x] | [x] | [x] | [x] | [x] | [x] | [ ] | sauberes Paar; Logik korrekt, keine Aenderung (Protokoll). Counts n=3..9 selbst nachgemessen = OEIS A008404, CLP==BT, extern per reference/076/costas_count.mzn (Gecode) n=3..7 bestaetigt. README an 006-Vorlage angeglichen, Non-ASCII (O(n^2)) raus, Performance frisch nachgemessen. Push offen |
 | Sudoku                  | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | kein Nummernpraefix (CSPLib prob040), Dateinamen noch klein `9x9sudoku_...`; drei Varianten |
 
 ---

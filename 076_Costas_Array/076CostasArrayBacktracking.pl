@@ -1,5 +1,6 @@
 :- use_module(library(lists)).
 
+% costas(+N, -Xs): builds a Costas Array of size N
 costas(N, Xs) :- % entry point: builds a Costas Array of size N
     numlist(1, N, Domain), % Domain = [1,2,...,N], the values to place
     N1 is N - 1, % there are N-1 difference levels
@@ -13,6 +14,8 @@ costas(N, Xs) :- % entry point: builds a Costas Array of size N
 % Xs: final result, only bound in the base case
 
 % base case: all values placed
+% build(+Avail, +Placed, +Buckets, -Xs): place the remaining Avail values one
+% by one, recording level diffs in Buckets, until Xs is the finished array
 build([], Placed, _, Xs) :- % all values placed, construct result
     reverse(Placed, Xs). % Placed was built in reverse, flip it to get Xs
 build(Avail, Placed, Buckets, Xs) :- % recursive case: still values to place
