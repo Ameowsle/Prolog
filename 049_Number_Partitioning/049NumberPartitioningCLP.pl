@@ -4,6 +4,7 @@
 % Split the numbers 1..N into two sets A and B of equal size such that
 % sum(A) = sum(B) and the sum of squares of A equals that of B.
 
+% partition(+N, -A, -B)
 partition(N, A, B) :-
     0 is N mod 2, % equal-sized sets require an even N
     Total is N * (N + 1) // 2, % sum of 1..N

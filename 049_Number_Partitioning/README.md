@@ -3,8 +3,7 @@
 
 Split the numbers `1..N` into two sets A and B that have **equal size**, **equal sum**, and **equal sum of squares**.
 
-Example (N=8): `A = [1, 4, 6, 7]`, `B = [2, 3, 5, 8]`
-→ both sets have 4 elements, sum 18, and sum of squares 102 ✓
+Example (N=8): `A = [1, 4, 6, 7]`, `B = [2, 3, 5, 8]`. Both sets have 4 elements, sum 18, and sum of squares 102.
 
 N=8 is the smallest size with a solution. For N = 2, 4, 6 none exists.
 
@@ -28,6 +27,24 @@ N=8 is the smallest size with a solution. For N = 2, 4, 6 none exists.
 - One 0/1 indicator variable per number (`1` = set A, `0` = set B).
 - `sum/3` fixes the set size; `scalar_product/4` fixes the sum and the sum of squares.
 - Symmetry break: number 1 is fixed to set A.
+
+## Performance Comparison
+
+Both solvers fix one element to break the swap symmetry between A and B, so they
+enumerate the same canonical solution set: for N=16,20,24 they return 7, 24 and
+296 solutions respectively. The table below enumerates all of them. Logical
+inferences are the reproducible metric; CPU times are indicative.
+
+| N | Solutions | Backtracking Inferences | Backtracking CPU | CLP Inferences | CLP CPU |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| 16 | 7   | 145,164    | 0.007s | 3,695,337   | 0.110s  |
+| 20 | 24  | 1,586,659  | 0.091s | 52,784,324  | 1.624s  |
+| 24 | 296 | 24,643,018 | 1.379s | 774,069,974 | 23.349s |
+
+Backtracking is roughly an order of magnitude faster here. It prunes a branch
+with cheap arithmetic the moment A's running size, sum or sum of squares
+overshoots its target, while the CLP model pays for `scalar_product/4`
+propagation plus labeling across the whole solution set.
 
 ## How to Run
 
