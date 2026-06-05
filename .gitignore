@@ -1,2 +1,8 @@
 .claude/
 CLAUDE.md
+.DS_Store
+reference/
+csplib_pr/
+PROBLEM_REVIEW_CHECKLIST.md
+CLEANING_CHECKLIST.md
+REFERENCE_COMPARISON.md
