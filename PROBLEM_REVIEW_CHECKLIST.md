@@ -99,7 +99,7 @@ nichts geaendert wird. Knapp halten: was, warum, oder warum absichtlich gelassen
 | Problem | Logik geaendert? | Was und warum (oder warum nicht) |
 |---|---|---|
 | 006 Golomb | ja (committed) | doppelte Loesungen gefixt (ueberlappende pairwise_diffs([_],[])-Klausel entfernt); sonst Ansatz korrekt, belassen |
-| 007 All-Interval |  |  |
+| 007 All-Interval | nein | Ansatz korrekt und tragfaehig (all_distinct auf Werten und auf Diffs). Counts selbst nachgemessen: n=8..12 = 40/120/296/648/1328 (OEIS A006323), CLP == BT, und extern gegen all_interval4.mzn (kein Symmetriebruch, gecode) bestaetigt (n=8/10/12 = 40/296/1328). Nur Hygiene: Mode-Kommentare, expliziter library(lists)-Import im BT, README auf ASCII gebracht. Bewusst kein Symmetriebruch (aufgabentreu, volle Loesungsmenge) |
 | 012 Nonogram |  |  |
 | 015 Schur |  |  |
 | 019 Magic |  |  |
@@ -461,7 +461,7 @@ CLP==BT), P = gepusht.
 | Problem | Anf | Qual | N | V | C | R | S | Ref | P | Notiz |
 |---|---|---|---|---|---|---|---|---|---|---|
 | 006 Golomb Ruler        | [x] | [x] | [x] | [x] | [x] | [x] | [x] | [x] | [x] | fertig inkl. Teil C. Externer Count-Abgleich mit MiniZinc/Gecode (reference/006/golomb_count.mzn: Symmetriebrechung raus + solve satisfy): m=4,5,6 = 354/4618/60010, exakt wie CLP==BT. Modellform deckt sich mit allen vier Referenzen (MiniZinc/ECLiPSe/SICStus/B-Prolog): Schranke n=m*m, mark[1]=0, streng steigend, alldifferent ueber Paardifferenzen. Optimum-Anker N=5/6/7 = 11/17/25 (OGR/ECLiPSe-Tabelle). CLP-Doppelloesung (ueberlappende pairwise_diffs([_],[])) gefixt; redundanten golomb/1 entfernt; README ASCII + Zaehl-Benchmark |
-| 007 All-Interval Series | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [x] | [ ] | sauberes Paar; Ref: OEIS A006323 + all_interval4.mzn (gleiche Semantik) bestaetigt (REFERENCE_COMPARISON.md) |
+| 007 All-Interval Series | [x] | [x] | [x] | [x] | [x] | [x] | [x] | [x] | [ ] | sauberes Paar, Logik korrekt belassen (kein Symmetriebruch, aufgabentreu). Counts selbst nachgemessen n=8..12 = 40/120/296/648/1328 (OEIS A006323), CLP==BT, extern gegen all_interval4.mzn (gecode, kein Symmetriebruch) bestaetigt. Hygiene: Mode-Kommentare, library(lists)-Import im BT, README ASCII |
 | 012 Nonogram            | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [x] | [ ] | BT-Datei heisst `RowByRow`, nicht `Backtracking`; drei Ansaetze im Root; Titel "Prolog Nonogram Solver" angleichen; Ref: automaton2-mzn gleiche Instanz, eindeutig (REFERENCE_COMPARISON.md) |
 | 015 Schur's Lemma       | [x] | [x] | [ ] | [x] | [x] | [x] | [x] | [x] | [ ] | geprueft, README im neuen Format; Ref: Grenzfall S(3)=13 bestaetigt, schur.mzn-Referenz hat x=y-Fehler (REFERENCE_COMPARISON.md); dann committen+pushen |
 | 019 Magic Squares       | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [x] | [ ] | zwei Probleme: Magic Square und Magic Sequence (je CLP+BT). Entscheiden, ob beide bleiben; Ref: Square n=3->8/n=4->7040, Sequence eindeutig (REFERENCE_COMPARISON.md) |

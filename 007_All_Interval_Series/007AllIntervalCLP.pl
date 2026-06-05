@@ -4,6 +4,7 @@
 % Find a permutation S of {0..N-1} such that the consecutive absolute
 % differences also form a permutation of {1..N-1}.
 
+% all_interval(+N, -S)
 all_interval(N, S) :-
     length(S, N),
     N1 is N - 1,
