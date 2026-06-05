@@ -4,11 +4,11 @@
 Place two copies of each number 1..N into a sequence of length 2N such that the two copies of each number K have exactly K numbers between them.
 
 Example (N=3): `[3, 1, 2, 1, 3, 2]`
-- The two 1s are at positions 2 and 4, 1 number between them ✓
-- The two 2s are at positions 3 and 6, 2 numbers between them ✓
-- The two 3s are at positions 1 and 5, 3 numbers between them ✓
+- The two 1s are at positions 2 and 4, 1 number between them
+- The two 2s are at positions 3 and 6, 2 numbers between them
+- The two 3s are at positions 1 and 5, 3 numbers between them
 
-> Note: A solution only exists when N mod 4 = 0 or N mod 4 = 3 (e.g. N = 3, 4, 7, 8, …).
+> Note: A solution only exists when N mod 4 = 0 or N mod 4 = 3 (e.g. N = 3, 4, 7, 8, ...).
 
 ## Problem Constraints
 
