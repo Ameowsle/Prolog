@@ -1,12 +1,13 @@
 :- use_module(library(clpfd)).
 
-% Balanced Incomplete Block Design (CSPLib prob030)
+% Balanced Incomplete Block Design (CSPLib prob028)
 % Build the V x B incidence matrix of a (V, B, R, K, L) design:
 %   - every row sums to R     (each object appears in R blocks)
 %   - every column sums to K  (each block contains K objects)
 %   - the scalar product of any two rows is L
 %     (each pair of objects occurs together in exactly L blocks)
 
+% bibd(+V, +B, +R, +K, +L, -Rows)
 bibd(V, B, R, K, L, Rows) :-
     length(Rows, V),                    % one row per object
     maplist(new_row(B), Rows),          % each row is B many 0/1 variables

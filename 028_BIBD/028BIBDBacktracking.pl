@@ -1,6 +1,6 @@
 :- use_module(library(lists)).
 
-% Balanced Incomplete Block Design (CSPLib prob030)
+% Balanced Incomplete Block Design (CSPLib prob028)
 % Build the V x B incidence matrix of a (V, B, R, K, L) design one row
 % at a time. Each row has exactly R ones; each column must end on exactly
 % K ones; every pair of rows must share exactly L ones.
@@ -67,6 +67,7 @@ all_pairs([Row|Rest], L) :-
     pair_with(Row, Rest, L),
     all_pairs(Rest, L).
 
+% pair_with(+Row, +Rows, +L): the scalar product of Row with each row in Rows equals L
 pair_with(_, [], _).
 pair_with(Row, [P|Ps], L) :-
     dot(Row, P, L),
