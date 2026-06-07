@@ -1,61 +1,87 @@
-# Prolog N-Queens Solver
+# Problem 054: N-Queens
 *(Source: CSPLib Problem [prob054](https://www.csplib.org/Problems/prob054/))*
 
+Place N queens on an N x N chessboard so that no two attack each other. In chess
+a queen attacks along its row, column and both diagonals, so no two queens may
+share a row, a column or a diagonal.
 
-This repository contains three different approaches to solving the classic **N-Queens Problem** in Prolog. It demonstrates the massive performance difference between a "Generate and Test" strategy, an optimized "Backtracking with Interleaving" approach and a solution using Constraint Logic Programming (CLP).
+A queen at column C and row R can be described by the pair (C, R). Two queens do
+not attack each other iff they differ in all of C, R, C - R and C + R. The
+diagonals correspond to the sum and the difference of the coordinates: moving one
+square along one diagonal leaves the sum unchanged, along the other leaves the
+difference unchanged.
 
-## Performance Comparison (N=15)
+The board is modelled as a list of length N where the position is the column and
+the value is the row. A list already forces one queen per column, so only the
+row, the ascending diagonal (Row + Col) and the descending diagonal (Row - Col)
+need to be kept distinct.
 
-The following metrics were recorded using the `time/1` predicate in SWI-Prolog:
+## Problem Constraints
 
-| Approach | Logical Inferences | CPU Time | Status |
-| :--- | :--- | :--- | :--- |
-| **Naive (Generate & Test)** | ~3,000,000,000s | 130s | Abort |
-| **Optimized (Interleaving)** | 190,310 | 0.030s| Success |
-| **CLP (Constraint Logic)** | 81,575 | 0.006s | Success |
----
+1. Exactly one queen per column (implicit in the list representation)
+2. All rows are distinct (no two queens on the same row)
+3. All ascending diagonals (Row + Col) are distinct
+4. All descending diagonals (Row - Col) are distinct
 
-##  Approaches
+## Approaches
 
-### 1. Naive Approach: Generate and Test
-The `n_queens/2` predicate uses a "blind" search strategy. It first generates a full permutation of the board and only then checks if it is valid.
-* **Complexity:** Generates $N!$ permutations. For $N=15$, there are over 1.3 trillion possibilities.
+### 1. Backtracking (`054NQueensBacktracking.pl`)
 
-### 2. Optimized Approach: Backtracking with Interleaving
-The `n_queens2/2` predicate uses "Interleaving". It checks for safety **immediately** after placing a single queen.
-* **Strategy:** If a queen is attacked, Prolog performs **Backtracking** immediately, pruning the entire search tree branch and saving billions of unnecessary checks.
+- `n_queens2/2` places one queen per column, choosing a row with `select/3` from
+  the rows still free. This already guarantees distinct rows.
+- It checks the diagonals immediately after placing each queen
+  (`check_position/3`), so an attacked placement is rejected at once and the rest
+  of that branch is pruned (constrain then generate, not generate then test).
 
-### 3. Advanced Approach: Constraint Logic Programming (CLP)
-The `n_queens_clp/2` using the clpfd library, defines logical constraints (rules) instead of manual checks. The programm tries to find a solution according to the rules. It eliminates the impossible solutions (i.e. two queens on the same diagonal or horizontal) before attempting to place the queens. 
+### 2. Constraint Logic Programming (`054NQueensCLP.pl`)
 
-* **Scalability:** While Backtracking is fast for small N, CLP is the only approach that remains efficient for very large boards (e.g., N=100).
+- One finite-domain variable per column, `Solution ins 1..N`.
+- `all_different/1` keeps the rows distinct.
+- `safe_diagonals/2` builds the ascending ids (`Row + Col`) and descending ids
+  (`Row - Col`) and posts `all_distinct/1` on each, so the diagonal constraints
+  propagate before search.
+- `labeling([ff])` searches with the first-fail variable order.
 
+## Performance Comparison
 
+Both solvers search the same space (no symmetry breaking) and enumerate the
+identical set of solutions, which is how the two models are cross-checked: for
+N=8,9,10 they each return 92, 352 and 724 solutions, matching OEIS A000170.
+The table below enumerates all of them. Logical inferences are the reproducible
+metric; CPU times are indicative.
 
-### Description (from Clib: https://www.csplib.org/Problems/prob054/)
+| N | Solutions | Backtracking Inferences | Backtracking CPU | CLP Inferences | CLP CPU |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| 8  | 92  | 119,331    | 0.013s | 3,000,500  | 0.092s |
+| 9  | 352 | 482,431    | 0.044s | 12,781,026 | 0.362s |
+| 10 | 724 | 2,313,923  | 0.212s | 52,339,873 | 1.484s |
 
-Can n queens (of the same colour) be placed on a n×n chessboard so that none of the queens can attack each other?
+For enumerating all solutions the backtracking solver is roughly 25x faster: it
+rejects an attacked placement with cheap arithmetic, while the CLP model pays for
+`all_distinct/1` propagation plus labeling across the whole solution set.
 
-In chess a queen attacks other squares on the same row, column, or either diagonal as itself. So the n-queens problem is to find a set of n locations on a chessboard, no two of which are on the same row, column or diagonal.
-
-
-A simple arithmetical observation may be helpful in understanding models. Suppose a queen is represented by an ordered pair (α,β), the value α represents the queen’s column, and β its row on the chessboard. Then two queens do not attack each other iff they have different values of all of α, β, α-β, and α+β. It may not be intuitively obvious that chessboard diagonals correspond to sums and differences, but consider moving one square along the two orthogonal diagonals: in one direction the sum of the coordinates does not change, while in the other direction the difference does not change. (We do not suggest that pairs (α,β) is a good representation for solving.)
-
-The problem has inherent symmetry. That is, for any solution we obtain another solution by any of the 8 symmetries of the chessboard (including the identity) obtained by combinations of rotations by 90 degrees and reflections.
-
-The problem is extremely well studied in the mathematical literature. An outstanding survey from 2009 is by Bell & Stevens [Bell20091].
-
-See below for discussions of complexity problems with n-Queens. For closely related variants without these problems see n-Queens Completion Problem and Excluded Diagonals n-Queens Problem, [prob079], and Blocked n-Queens Problem, [prob080].
-
-Complexity
-Some care has to be taken when using the n-queens problem as a benchmark. Here are some points to bear in mind:
-
-- The n-queens problem is solvable for n=1 and n≥4. So the decision problem is solvable in constant time.
-- A solution to the n-queens problem for any n≠2,3 was given in 1874 by Pauls and can be found in Bell & Stevens’ survey [Bell20091]. It can be constructed in time O(n) (assuming arithemetical operations on size n are O(1).)
-- Note that the parameter n for n-queens only needs log(n) bits to specify, so actually O(n) is exponential in the input size. I.e. it’s not trivial to provide a witness of poly size in the input.
-- While the decision problem is easy, counting the number of solutions for given n is not. Indeed Bell & Stevens [Bell20091] report that there is no closed form expression for it and that it is “beyond #P-Complete”, citing [Hsiang200487]. (Oddly [chaiken_queens] report a closed form solution for the number of solutions to n-queens: it’s unclear if this contradicts the earlier result, but more importantly it’s not clear that this has better complexity than simply enumerating solutions.)
+For finding only the first solution the picture reverses. The CLP model with
+first-fail labeling scales to large boards (N=50 in about 0.13s), while the plain
+backtracking solver uses a static row order and degrades quickly: it solves N=12
+in milliseconds but already takes well over a minute on some larger boards. A
+value-ordering heuristic would be needed to match the documented scaling of CLP
+to several hundred queens.
 
 ## How to Run
+
 1. Start SWI-Prolog: `swipl`
-2. Consult the file: `?- [filename].`
-3. Run the CLP version: `?- n_queens_clp(12, L).`
+2. Consult a file, e.g.: `?- ['054NQueensCLP.pl'].`
+
+**Backtracking:**
+```prolog
+?- ['054NQueensBacktracking.pl'].
+?- n_queens2(8, Solution).
+?- time(aggregate_all(count, n_queens2(8, _), Count)).
+```
+
+**CLP:**
+```prolog
+?- ['054NQueensCLP.pl'].
+?- n_queens_clp(8, Solution).
+?- time(once(n_queens_clp(50, Solution))).
+```
