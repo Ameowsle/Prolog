@@ -1,47 +1,88 @@
-# Prolog Killer Sudoku Solver
+# Problem 057: Killer Sudoku
+
 *(Source: CSPLib Problem [prob057](https://www.csplib.org/Problems/prob057/))*
 
-**Killer Sudoku** extends classical Sudoku with additional sum constraints. Solve 9×9 grids where cells are grouped into "cages" that must sum to specified totals while maintaining standard Sudoku rules.
+Killer Sudoku combines classical Sudoku with the cage sums of Kakuro. On a 9x9
+grid the cells are partitioned into cages, each with a target total. The grid
+must satisfy the usual Sudoku rules and, in addition, the numbers in every cage
+must add up to its target without repeating. CSPLib also defines a straightforward
+generalisation to NxN grids where N has an integer square root (boxes are then
+sqrt(N) x sqrt(N)); the generalised solvers below cover that case.
 
-## Constraints
+Example (first row of the unique solution to the Wikipedia "Killersudoku_color"
+instance): `2 1 5 6 4 7 3 9 8`.
 
-1. **Row constraint:** Each row must contain each value 1-9 exactly once                       
-2. **Column constraint:** Each column must contain each value 1-9 exactly once
-3. **Block constraint:** Each 3×3 block must contain each value 1-9 exactly once               
-4. **Cage sum:** All cells in a cage must sum to the specified total                           
-5. **Cage uniqueness:** No value may repeat within a cage
+## Problem Constraints
 
-## Performance Comparison (9×9 Grid)                                                           
-   
-| Approach | Logical Inferences | CPU Time | Speed vs. Backtracking |                          
-| :--- | :--- | :--- | :--- |           
-| **Backtracking with Domain Constraint** | 925,388 | 0.049s | **~18x faster** |               
-| **CLP (Constraint Logic)** | 1,056,038 | 0.052s | **~16x faster** |                          
-| **Naive Backtracking** | 16,645,390 | 0.411s | Baseline |
+1. Each row contains each value 1..N exactly once
+2. Each column contains each value 1..N exactly once
+3. Each sqrt(N) x sqrt(N) block contains each value 1..N exactly once (3x3 for the standard 9x9 grid)
+4. The cells of every cage sum to the cage's target total
+5. No value repeats within a cage
 
 ## Approaches
 
-### 1. Naive Backtracking (`057KillerSodokuBacktr.pl`)
-All rows are flattened into a single list via `append/2`, then filled cell by cell. For every empty cell, `member/2` tries all values from `[1..9]` without any domain restriction. After each assignment, all rows, columns, blocks, and cages are checked including those that have not changed. Invalid values are only detected after being assigned.    
+### 1. Backtracking with Domain Constraint (`057KillerSudokuBacktrackingDomainConstraint.pl`)
 
-### 2. Backtracking with Domain Constraint per Cell (`057KillerSudokuBacktracking_per_Cell.pl`)
-Before trying any value, `candidates/4` computes valid values as the **intersection** of two restricted domains:
+Solves the standard 9x9 grid by constrain-then-generate: before any value is
+placed, `candidates/4` computes the legal values for a cell as the intersection
+of two restricted domains.
 
-**Row / Column / Block:** a value is invalid if it already appears in the same row, column, or 3×3 block. These produce a fixed list of used values that is subtracted from `[1..9]`.
+- Row / column / block: a value is excluded if it already appears in the same
+  row, column, or 3x3 block. These give a fixed set of used values that is
+  subtracted from `1..9`.
+- Cage: a value is excluded if it already appears in the cage (distinctness), or
+  if it would make the remaining cage sum unreachable. The reachability test uses
+  the Gauss bound on what the still empty cells can sum to. The result is
+  intersected with the row/column/block domain.
 
-**Cage:** a value is invalid if it already appears in the cage (distinctness), or if it would make the remaining cage sum unreachable. The second condition cannot be expressed as a simple subtraction, it depends on how many cells are still empty and what sum they still need to reach. Instead, `cage_candidates` computes which values are still valid using the Gauss formula to bound the achievable sum, and the result is intersected with the row/col/block domain.
+Because each cell is only ever tried with values that can still lead to a
+solution, the search prunes early rather than testing a full assignment at the end.
 
-### 3. CLP (`057KillerSudokuCLP.pl`)
-Uses `library(clpfd)`. All Sudoku and cage constraints are declared directly. Domains are automatically propagated across the entire grid after every assignment.
+### 2. CLP (`057KillerSudokuCLP.pl`)
 
-### 4. Generalised Backtracking (`057:GeneralisationBacktr.pl`)
-Same approach as naive backtracking but works for any N×N grid, not just 9×9. Block size is computed dynamically.
+Solves the standard 9x9 grid with `library(clpfd)`. Every cell is a variable in
+`1..9`; `all_distinct/1` is posted on each row, column, and 3x3 block, and each
+cage gets `all_distinct/1` plus `sum(Cells, #=, Target)`. The constraints
+propagate across the whole grid before `label/1` searches for values.
 
-### 5. Generalised CLP (`057:GeneralisationCLP.pl`)
-Same as the CLP approach but generalised for any N×N grid.
+Note: both MiniZinc reference models post only the cage sum, not `all_distinct`
+per cage. The model here is the more complete reading of the rules ("no value
+repeats within a cage").
+
+### 3. Generalised Backtracking with Domain Constraint (`057KillerSudokuGeneralisationBacktrackingDomainConstraint.pl`)
+
+The same domain-constraint backtracking, but for any NxN grid where N has an
+integer square root. The block size sqrt(N) is computed from the grid, so the
+solver is not tied to 9x9.
+
+### 4. Generalised CLP (`057KillerSudokuGeneralisationCLP.pl`)
+
+The same CLP model generalised to any NxN grid: the domain becomes `1..N` and the
+blocks are sqrt(N) x sqrt(N), derived from the grid size.
+
+## Performance Comparison
+
+The instance has exactly one solution; both the CLP and the domain-constraint
+backtracking solvers find it and confirm uniqueness. This was cross-checked
+against the MiniZinc reference (`killer_sudoku.mzn`, Gecode), which returns the
+same grid and reports no further solution. The figures below are for finding the
+solution on the 9x9 instance. Logical inferences are the reproducible metric; CPU
+times are indicative.
+
+| Approach | Logical Inferences | CPU Time |
+| :--- | :--- | :--- |
+| Backtracking with Domain Constraint (9x9) | 921,175 | 0.031s |
+| CLP (9x9) | 1,055,665 | 0.035s |
+| Generalised Backtracking with Domain Constraint | 1,013,853 | 0.039s |
+| Generalised CLP | 1,056,447 | 0.031s |
+
+The 9x9 and generalised variants run the same instance and so land within
+measurement noise of one another. At this grid size the comparison is not a
+meaningful benchmark; it only confirms the solvers agree and run instantly.
 
 ## How to Run
 
 1. Start SWI-Prolog: `swipl`
-2. Consult the file: `?- ['057KillerSudoku.pl'].`
-3. Run the CLP version: `?- sudoku(Solution).`
+2. Consult a file, e.g.: `?- ['057KillerSudokuCLP.pl'].`
+3. Run the solver: `?- sudoku(Solution).`
