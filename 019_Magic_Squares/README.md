@@ -1,20 +1,20 @@
 # Problem 019: Magic Square
 *(Source: CSPLib Problem [prob019](https://www.csplib.org/Problems/prob019/))*
 
-An order n magic square is an n×n matrix containing the numbers 1 to n², where every row, column, and both main diagonals sum to the same value, the **magic sum**.
+An order n magic square is an n x n matrix containing the numbers 1 to n^2, where every row, column, and both main diagonals sum to the same value, the **magic sum**.
 
 > Note: CSPLib prob019 also describes magic sequences, which is a separate problem, solutions are included below.
 
 ## Problem Constraints
 
-1. Each number from 1 to n² appears exactly once
+1. Each number from 1 to n^2 appears exactly once
 2. Every row sums to the magic sum
 3. Every column sums to the magic sum
 4. Both main diagonals sum to the magic sum
 
 The magic sum is always: $S = \frac{n(n^2 + 1)}{2}$
 
-For example, a 3×3 magic square has sum $S = \frac{3 \cdot 10}{2} = 15$.
+For example, a 3x3 magic square has sum $S = \frac{3 \cdot 10}{2} = 15$.
 
 ## Approaches
 
@@ -75,8 +75,9 @@ To print the result row by row:
 **Magic Sequence, Backtracking:**
 ```prolog
 ?- ['019MagicSequenceBacktracking.pl'].
-?- magic_sequence(10, Seq).
+?- magic_sequence(8, Seq).
 ```
+The backtracking solver is only practical for small N (roughly up to 8). For larger N (e.g. 10) use the CLP solver below.
 
 **Magic Sequence, CLP (general solver):**
 ```prolog

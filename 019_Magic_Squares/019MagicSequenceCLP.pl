@@ -8,6 +8,7 @@
 puzzle(10, [6, 2, 1, 0, 0, 0, _, _, _, _]).
 
 % solve the predefined puzzle
+% solve(-Seq)
 solve(Seq) :-
     puzzle(N, Seq),
     Seq ins 0..N,
@@ -18,6 +19,7 @@ solve(Seq) :-
     label(Seq).
 
 % general solver: find a magic sequence of length N from scratch
+% magic_sequence(+N, -Seq)
 magic_sequence(N, Seq) :-
     length(Seq, N),
     Seq ins 0..N,
@@ -30,6 +32,7 @@ magic_sequence(N, Seq) :-
 
 % zips indices and sequence variables into key-value pairs:
 % build_pairs([0,1,2], [X0,X1,X2], [0-X0, 1-X1, 2-X2])
+% build_pairs(+Indices, +Seq, -Pairs)
 build_pairs([], [], []).
 build_pairs([I|Is], [X|Xs], [I-X|Ps]) :-
     build_pairs(Is, Xs, Ps).

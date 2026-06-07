@@ -2,12 +2,14 @@
 % is between 0 and n-1, and xi equals the number of times i occurs in the sequence.
 % Example (n=10): [6,2,1,0,0,0,1,0,0,0]
 
+% magic_sequence(+N, -Seq)
 magic_sequence(N, Seq) :-
     length(Seq, N),
     N1 is N - 1,
     numlist(0, N1, Domain),          % each value must be in 0..N-1
     fill(Seq, Domain, Seq).
 
+% fill(+Cells, +Domain, +Seq)
 fill([], _, _).
 fill([H|Rest], Domain, Seq) :-
     member(H, Domain),               % assign value from 0..N-1 (values can repeat, so no select)
@@ -17,6 +19,7 @@ fill([H|Rest], Domain, Seq) :-
 
 % Incomplete: for each filled position i with value xi,
 % the current count of i in filled cells must not exceed xi.
+% check_partial(+Seq)
 check_partial(Seq) :-
     include(nonvar, Seq, Filled),
     length(Seq, N),
@@ -30,6 +33,7 @@ check_partial(Seq) :-
 
 
 % For each filled position i: count of i in filled cells must not exceed xi.
+% check_counts(+Cells, +Filled, +I)
 check_counts([], _, _).
 check_counts([Cell|Rest], Filled, I) :-
     nonvar(Cell),
@@ -44,6 +48,7 @@ check_counts([Cell|Rest], Filled, I) :-
 
 
 % Verifies complete sequence: count of i must equal xi for every position.
+% verify_all(+Cells, +Seq, +I)
 verify_all([], _, _).
 verify_all([Cell|Rest], Seq, I) :-
     count_occurrences(I, Seq, Count),
@@ -52,6 +57,7 @@ verify_all([Cell|Rest], Seq, I) :-
     verify_all(Rest, Seq, NextI).
 
 
+% count_occurrences(+X, +List, -Count): Count is how often X occurs in List
 count_occurrences(X, List, Count) :-
     include(=(X), List, Matches),   % keep only elements equal to X
     length(Matches, Count).

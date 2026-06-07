@@ -1,5 +1,6 @@
 :- use_module(library(clpfd)).
 
+% magic_square(+N, -Square)
 magic_square(N, Square) :-
     %  Matrix (Square)
     length(Square, N), % Square has the length of N
@@ -11,8 +12,8 @@ magic_square(N, Square) :-
     Vars ins 1..Max,% every cell must be between 1 and Max (n squared)
     all_distinct(Vars),% every value must appear exactly once
 
-    %Compute magic sum 
-    Sum is N * (N * N + 1) // 2, 
+    %Compute magic sum
+    Sum is N * (N * N + 1) // 2,
 
     % Enforce row sums
     maplist(row_sum(Sum), Square), % each row must add up to Sum: maplist calls row_sum for every row in Square
@@ -27,8 +28,8 @@ magic_square(N, Square) :-
     maplist(diag1_cell(Square), Indices, Diag1),  % Calls diag1_cell for every Index and stores them in Diag1
     row_sum(Sum, Diag1), % diagonal must add up to Sum
 
-    % Enforce anti-diagonal 
-    maplist(diag2_cell(Square, N), Indices, Diag2), % calls diag2_cell for every index in didices and stores them in diag2
+    % Enforce anti-diagonal
+    maplist(diag2_cell(Square, N), Indices, Diag2), % calls diag2_cell for every index in Indices and stores them in diag2
     row_sum(Sum, Diag2), % diagonal must add up to Sum
 
     %Search for concrete values satisfying all constraints and stores them in Vars
@@ -36,20 +37,24 @@ magic_square(N, Square) :-
 
 %----------------
 %HELPERFUNCTIONS
-% Swap the parameters for the maplist function. 
+% Swap the parameters for the maplist function.
+% length_(+N, ?List): List is a list of N elements
 length_(N, List) :- length(List, N).
 
 % Enforce that a list sums to Sum
+% row_sum(+Sum, +Row)
 row_sum(Sum, Row) :- sum(Row, #=, Sum).
 
 % gets cells with index (I,I)
 % nth0 gives us the element at position I
+% diag1_cell(+Square, +I, -Cell)
 diag1_cell(Square, I, Cell) :-
     nth0(I, Square, Row), % get row number I
     nth0(I, Row, Cell). % get element number I from that row
 
 % Get cell (I, N-1-I) for anti-diagonal
+% diag2_cell(+Square, +N, +I, -Cell)
 diag2_cell(Square, N, I, Cell) :-
     nth0(I, Square, Row), % get row number I
-    J is N - 1 - I,  % column index 
+    J is N - 1 - I,  % column index
     nth0(J, Row, Cell). % get element number J from that row
