@@ -18,8 +18,8 @@ Find a permutation of {0,…,N-1} whose N-1 consecutive absolute differences are
 Logic puzzle where grid cells must be filled (1) or empty (0) based on row and column constraints. Three different approaches: Row-by-Row with Early Pruning, All-at-Once Constraint Check, and CLP.
 
 ### [Schur's Lemma](https://www.csplib.org/Problems/prob015/)
-Colour the integers 1 to N with C colours so that no colour class contains x, y, z with x + y = z.
-- **Approaches:** Backtracking (colour-by-colour with sum-free checking), CLP
+Colour the integers 1 to N with C colours so that no colour class contains x, y, z with x + y = z. The largest N solvable with C colours is the Schur number S(C): S(2)=4, S(3)=13.
+- **Approaches:** Backtracking (integers coloured ascending, sum-free check on placement), CLP (one colour variable per integer, a reified constraint per x+y=z triple)
 - **Key Insight:** Colouring ascending means each new integer only needs checking as the *sum* of two already-coloured ones.
 
 ### [Magic Squares](https://www.csplib.org/Problems/prob019/)
@@ -32,7 +32,7 @@ Place two copies of each number 1..N in a sequence of length 2N so that the two 
 - **Approaches:** Backtracking (largest number first), CLP (position variables linked via `element/3`)
 - **Key Insight:** A solution exists only when N mod 4 is 0 or 3.
 
-### [Balanced Incomplete Block Design (BIBD)](https://www.csplib.org/Problems/prob030/)
+### [Balanced Incomplete Block Design (BIBD)](https://www.csplib.org/Problems/prob028/)
 Build the V×B incidence matrix of a (V,B,R,K,L) design: fixed row sums, column sums, and pairwise row overlaps.
 - **Approaches:** Backtracking (row-by-row), CLP (with `lex_chain` symmetry breaking)
 - **Key Insight:** Lexicographic ordering of rows and columns prunes the design's large symmetry group.
