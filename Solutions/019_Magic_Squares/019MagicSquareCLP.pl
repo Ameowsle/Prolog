@@ -2,41 +2,41 @@
 
 % magic_square(+N, -Square)
 magic_square(N, Square) :-
-    %  Matrix (Square)
-    length(Square, N), % Square has the length of N
+    % Matrix (Square): N rows
+    length(Square, N), % Square has N rows
     maplist(length_(N), Square), % each row is a list of N variables
 
-    % STEP 2: Collect all cells, set domain and uniqueness
-    append(Square, Vars),% creates a list from the matrix
-    Max is N * N, % calculate highest value
-    Vars ins 1..Max,% every cell must be between 1 and Max (n squared)
-    all_distinct(Vars),% every value must appear exactly once
+    % Collect all cells, set domain and uniqueness
+    append(Square, Vars), % creates a single list from the matrix
+    Max is N * N, % highest value (n squared)
+    Vars ins 1..Max, % every cell must be between 1 and Max
+    all_distinct(Vars), % every value must appear exactly once
 
-    %Compute magic sum
+    % Compute magic sum
     Sum is N * (N * N + 1) // 2,
 
     % Enforce row sums
     maplist(row_sum(Sum), Square), % each row must add up to Sum: maplist calls row_sum for every row in Square
 
     % Enforce column sums
-    transpose(Square, Columns), %first transpose the matrix
+    transpose(Square, Columns), % first transpose the matrix
     maplist(row_sum(Sum), Columns), % now check column sums like row sums
 
     % Enforce main diagonal sums
     Last is N - 1,
-    numlist(0, Last, Indices),% creates a list [0,1,2,...,N-1]
-    maplist(diag1_cell(Square), Indices, Diag1),  % Calls diag1_cell for every Index and stores them in Diag1
+    numlist(0, Last, Indices), % creates a list [0,1,2,...,N-1]
+    maplist(diag1_cell(Square), Indices, Diag1),  % collect the main-diagonal cell for every index into Diag1
     row_sum(Sum, Diag1), % diagonal must add up to Sum
 
     % Enforce anti-diagonal
-    maplist(diag2_cell(Square, N), Indices, Diag2), % calls diag2_cell for every index in Indices and stores them in diag2
+    maplist(diag2_cell(Square, N), Indices, Diag2), % collect the anti-diagonal cell for every index into Diag2
     row_sum(Sum, Diag2), % diagonal must add up to Sum
 
-    %Search for concrete values satisfying all constraints and stores them in Vars
-    label(Vars).% assign actual numbers to all variables
+    % Search for concrete values satisfying all constraints
+    label(Vars). % assign actual numbers to all variables
 
-%----------------
-%HELPERFUNCTIONS
+% ----------------
+% HELPER FUNCTIONS
 % Swap the parameters for the maplist function.
 % length_(+N, ?List): List is a list of N elements
 length_(N, List) :- length(List, N).
